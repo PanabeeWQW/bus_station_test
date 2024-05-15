@@ -1,0 +1,10 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+	Страница регистрации
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'customer_register' %}">Я хочу арендовать транспорт!</a>
+    <a href="{% url 'driver_register' %}">Я хочу быть водителем!</a>
+{% endblock %}

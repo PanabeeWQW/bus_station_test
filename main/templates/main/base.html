@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="UTF-8">
+    <title>
+    {% block title %}
+
+    {% endblock %}
+    </title>
+</head>
+<body>
+    <ul class="list-group">
+        <li class="list-group-item">User: {{ user }}</li>
+        <li class="list-group-item"><a href="{% url 'home' %}">На главную</a></li>
+    </ul>
+{% block content %}
+
+{% endblock %}
+</body>
+</html>

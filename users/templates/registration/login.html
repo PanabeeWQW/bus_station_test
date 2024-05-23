@@ -1,14 +1,40 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-	Вход в аккаунт
+    Вход в аккаунт
 {% endblock %}
 
 {% block content %}
-	<h1>Войти в аккаунт</h1>
-    <form action="{% url 'login' %}" method="post">
-    {{ form }}
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success">Войти</button>
-    </form>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div style="width: 400px;">
+            <h1 style="text-align: center">Вход в аккаунт</h1>
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Имя пользователя:</label>
+                    <input type="text" id="id_username" name="username" class="form-control" value="{{ form.username.value|default:'' }}">
+                    <div id="id_username" class="form-text">Введите имя пользователя, которое вы указывали при регистрации</div>
+                </div>
+                <div class="mb-3">
+                    <label for="id_password" class="form-label">Пароль:</label>
+                    <input type="password" id="id_password" name="password" class="form-control">
+                    <div id="id_password" class="form-text">Введите пароль, который вы указывали при регистрации</div>
+                </div>
+                <a href="{% url 'password_reset' %}">Забыли пароль?</a> <br>
+                <button style="margin-top: 10px" type="submit" class="btn btn-success">Войти</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

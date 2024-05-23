@@ -29,8 +29,7 @@ class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
     class Meta:
         verbose_name = 'Арендатор'
         verbose_name_plural = 'Арендаторы'

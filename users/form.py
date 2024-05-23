@@ -3,47 +3,54 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
 from users.models import User, Customer, Driver
 
-
 class CustomerSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
+    profile_photo = forms.ImageField(required=False)
+    date_of_birth = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'phone_number', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'phone_number', 'profile_photo', 'date_of_birth', 'password1', 'password2')
 
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
         user.is_customer = True
         user.save()
-        customer = Customer.objects.create(user=user)
-        customer.first_name = self.cleaned_data.get('first_name')
-        customer.last_name = self.cleaned_data.get('last_name')
-        customer.phone_number = self.cleaned_data.get('phone_number')
-        customer.save()
+        customer = Customer.objects.create(
+            user=user,
+            phone_number=self.cleaned_data.get('phone_number'),
+            profile_photo=self.cleaned_data.get('profile_photo'),
+            date_of_birth=self.cleaned_data.get('date_of_birth'),
+            balance=self.cleaned_data.get('balance')
+        )
         return user
-
 
 class DriverSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
+    driver_license = forms.CharField(max_length=50, required=True)
+    experience_years = forms.IntegerField(min_value=0, required=True)
+    profile_photo = forms.ImageField(required=False)
+    date_of_birth = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number', 'password1', 'password2', 'driver_license', 'experience_years', 'profile_photo', 'date_of_birth')
 
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
-        user.is_employee = True
-        user.is_stuff = True
+        user.is_driver = True
         user.save()
-        employee = Driver.objects.create(user=user)
-        employee.first_name = self.cleaned_data.get('first_name')
-        employee.last_name = self.cleaned_data.get('last_name')
-        employee.phone_number = self.cleaned_data.get('phone_number')
-        employee.save()
+        driver = Driver.objects.create(
+            user=user,
+            driver_license=self.cleaned_data.get('driver_license'),
+            experience_years=self.cleaned_data.get('experience_years'),
+            profile_photo=self.cleaned_data.get('profile_photo'),
+            date_of_birth=self.cleaned_data.get('date_of_birth')
+        )
         return user

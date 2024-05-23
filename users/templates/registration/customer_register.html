@@ -5,38 +5,73 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form method="post" class="mt-5">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="{{ form.username.id_for_label }}">Имя пользователя:</label>
-                    {{ form.username }}
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div style="width: 800px;">
+        <h1 style="text-align: center">Регистрация для аренды</h1>
+        <form method="post" class="mt-4" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
                 </div>
-                <div class="form-group">
-                    <label for="{{ form.first_name.id_for_label }}">Имя:</label>
-                    {{ form.first_name }}
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_profile_photo" class="form-label">Фото профиля:</label>
+                        <input type="file" id="id_profile_photo" name="profile_photo" class="form-control">
+                        <div id="id_profile_photo" class="form-text">Загрузите фото профиля</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Имя пользователя:</label>
+                        <input type="text" id="id_username" name="username" class="form-control" value="{{ form.username.value|default:'' }}">
+                        <div id="id_username" class="form-text">Введите имя пользователя</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_first_name" class="form-label">Имя:</label>
+                        <input type="text" id="id_first_name" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}">
+                        <div id="id_first_name" class="form-text">Введите ваше имя</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_last_name" class="form-label">Фамилия:</label>
+                        <input type="text" id="id_last_name" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
+                        <div id="id_last_name" class="form-text">Введите вашу фамилию</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="{{ form.last_name.id_for_label }}">Фамилия:</label>
-                    {{ form.last_name }}
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_date_of_birth" class="form-label">Дата рождения:</label>
+                        <input type="date" id="id_date_of_birth" name="date_of_birth" class="form-control" value="{{ form.date_of_birth.value|default:'' }}">
+                        <div id="id_date_of_birth" class="form-text">Введите дату вашего рождения</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_phone_number" class="form-label">Номер телефона:</label>
+                        <input type="text" id="id_phone_number" name="phone_number" class="form-control" value="{{ form.phone_number.value|default:'' }}">
+                        <div id="id_phone_number" class="form-text">Введите ваш номер телефона</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Пароль:</label>
+                        <input type="password" id="id_password1" name="password1" class="form-control">
+                        <div id="id_password1" class="form-text">Введите пароль</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Подтверждение пароля:</label>
+                        <input type="password" id="id_password2" name="password2" class="form-control">
+                        <div id="id_password2" class="form-text">Подтвердите пароль</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="{{ form.phone_number.id_for_label }}">Номер телефона:</label>
-                    {{ form.phone_number }}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.password1.id_for_label }}">Пароль:</label>
-                    {{ form.password1 }}
-                </div>
-                <div class="form-group">
-                    <label for="{{ form.password2.id_for_label }}">Подтверждение пароля:</label>
-                    {{ form.password2 }}
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
-            </form>
-        </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+        </form>
     </div>
 </div>
 {% endblock %}

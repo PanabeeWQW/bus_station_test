@@ -13,17 +13,26 @@
         </div>
         <div class="col-md-8">
             <h2>{{ bus.brand }} {{ bus.model }}</h2>
-            <p><strong>Год выпуска:</strong> {{ bus.year_of_production }}</p>
-            <p><strong>Трансмиссия:</strong> {{ bus.get_transmission_type_display }}</p>
-            <p><strong>Доступность:</strong> {% if bus.is_available %}Доступен{% else %}Не доступен{% endif %}</p>
-            <p><strong>Категория:</strong> {{ bus.category.name }}</p>
-            <p><strong>Бренд:</strong> {{ bus.brand.name }}</p>
-            {% if bus.driver %}
-                <p><strong>Водитель:</strong> {{ bus.driver.name }}</p>
-            {% else %}
-                <p><strong>Водитель:</strong> Нет назначенного водителя</p>
-            {% endif %}
-            <a href="{% url 'catalog' %}" class="btn btn-primary">Назад к каталогу</a>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Год выпуска:</strong> {{ bus.year_of_production }}</li>
+                <li class="list-group-item"><strong>Трансмиссия:</strong> {{ bus.get_transmission_type_display }}</li>
+                <li class="list-group-item">
+                    <strong>Доступность:</strong>
+                    {% if bus.is_available %}
+                        <span class="text-success">Доступен</span>
+                    {% else %}
+                        <span class="text-danger">Не доступен</span>
+                    {% endif %}
+                </li>
+                <li class="list-group-item"><strong>Категория:</strong> {{ bus.category.name }}</li>
+                <li class="list-group-item"><strong>Бренд:</strong> {{ bus.brand.name }}</li>
+                {% if bus.driver %}
+                    <li class="list-group-item"><strong>Водитель:</strong> {{ bus.driver.name }}</li>
+                {% else %}
+                    <li class="list-group-item"><strong>Водитель:</strong> Нет назначенного водителя</li>
+                {% endif %}
+            </ul>
+            <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Назад к каталогу</a>
         </div>
     </div>
 </div>

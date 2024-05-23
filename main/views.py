@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from .models import *
 
 def index(request):
@@ -23,3 +24,49 @@ def catalog(request):
 def bus_detail(request, bus_id):
     bus = get_object_or_404(Bus, id=bus_id)
     return render(request, 'main/bus_detail/bus_detail.html', {'bus': bus})
+
+
+def order_with_driver(request, bus_id):
+    if request.method == 'POST':
+        # Обработка POST-запроса для создания заказа
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        start_point = request.POST.get('start_point')
+        end_point = request.POST.get('end_point')
+        payment_method = request.POST.get('payment_method')
+
+        bus = get_object_or_404(Bus, id=bus_id)
+
+        order = Order.objects.create(
+            customer=request.user.customer,
+            bus=bus,
+            driver_needed=True,
+            start_date=start_date,
+            end_date=end_date,
+            start_point=start_point,
+            end_point=end_point,
+            payment_method=payment_method,
+            status='pending'
+        )
+
+        # Изменяем статус автобуса на "недоступен"
+        bus.is_available = False
+        bus.save()
+
+        return redirect('order_detail', order_id=order.id)
+    else:
+        # Проверяем, аутентифицирован ли пользователь
+        if request.user.is_authenticated:
+            # Если пользователь аутентифицирован, отображаем форму заказа
+            return render(request, 'main/order/order_with_driver.html', {'bus': get_object_or_404(Bus, id=bus_id)})
+        else:
+            # Если пользователь не аутентифицирован, перенаправляем на страницу регистрации
+            return redirect('register')  # Предполагается, что у вас есть URL с именем 'register'
+
+
+def order_detail(request, order_id):
+    # Получаем объект заказа по его идентификатору
+    order = get_object_or_404(Order, id=order_id)
+
+    # Передаем объект заказа в контекст для отображения на странице
+    return render(request, 'main/order/order_detail.html', {'order': order})

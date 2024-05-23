@@ -36,6 +36,9 @@
                 <li class="nav-item">
                     <a class="nav-link disabled" tabindex="-1" aria-disabled="true">Вы вошли как: {{ user }}</a>
                 </li>
+                    {% if order %}
+                        <a class="nav-link" href="{% url 'order_detail' order.id %}"> Заявки на аренду</a>
+                    {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'personal_account' %}">Личный кабинет</a>
                 </li>

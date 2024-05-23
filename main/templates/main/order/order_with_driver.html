@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Заказ автобуса с водителем
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Заказ автобуса с водителем</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Дата начала аренды:</label>
+            <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+        </div>
+        <div class="mb-3">
+            <label for="end_date" class="form-label">Дата окончания аренды:</label>
+            <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+        </div>
+        <div class="mb-3">
+            <label for="start_point" class="form-label">Место старта:</label>
+            <input type="text" class="form-control" id="start_point" name="start_point" required>
+        </div>
+        <div class="mb-3">
+            <label for="end_point" class="form-label">Место финиша:</label>
+            <input type="text" class="form-control" id="end_point" name="end_point" required>
+        </div>
+        <div class="mb-3">
+            <label for="payment_method" class="form-label">Метод оплаты:</label>
+            <select class="form-select" id="payment_method" name="payment_method" required>
+                <option value="cash">Наличные</option>
+                <option value="card">Карта</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить заказ</button>
+    </form>
+</div>
+{% endblock %}

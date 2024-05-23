@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% block title %}
+    Детали заказа
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Детали заказа</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Информация о заказе</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Дата начала аренды:</strong> {{ order.start_date }}</li>
+                <li class="list-group-item"><strong>Дата окончания аренды:</strong> {{ order.end_date }}</li>
+                <li class="list-group-item"><strong>Место старта:</strong> {{ order.start_point }}</li>
+                <li class="list-group-item"><strong>Место финиша:</strong> {{ order.end_point }}</li>
+                <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
+                <li class="list-group-item"><strong>Статус:</strong> {{ order.status }}</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h2>Информация об автобусе</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Марка автобуса:</strong> {{ order.bus.brand.name }}</li>
+                <li class="list-group-item"><strong>Модель автобуса:</strong> {{ order.bus.model }}</li>
+                <li class="list-group-item"><strong>Год выпуска:</strong> {{ order.bus.year_of_production }}</li>
+                <li class="list-group-item"><strong>Тип трансмиссии:</strong> {{ order.bus.get_transmission_type_display }}</li>
+                {% if order.bus.driver %}
+                    <li class="list-group-item"><strong>Водитель:</strong> {{ order.bus.driver.first_name }} {{ order.bus.driver.last_name }}</li>
+                {% else %}
+                    <li class="list-group-item"><strong>Водитель:</strong> Нет назначенного водителя</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

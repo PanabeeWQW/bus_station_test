@@ -7,4 +7,6 @@ urlpatterns = [
     path('', include('users.urls')),
     path('catalog/', catalog, name='catalog'),
     path('bus_detail/<int:bus_id>/', bus_detail, name='bus_detail'),
+    path('order_with_driver/<int:bus_id>/', order_with_driver, name='order_with_driver'),
+    path('order_detail/<int:order_id>/', order_detail, name='order_detail'),
 ]

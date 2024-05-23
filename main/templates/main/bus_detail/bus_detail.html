@@ -33,6 +33,8 @@
                 {% endif %}
             </ul>
             <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Назад к каталогу</a>
+            <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
+            <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
         </div>
     </div>
 </div>

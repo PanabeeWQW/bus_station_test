@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+	{{ user }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Личный кабинет водителя</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if driver.profile_photo %}
+                        <img src="{{ driver.profile_photo.url }}" alt="Profile Photo" class="img-fluid rounded-circle" style="max-width: 200px;">
+                    {% else %}
+                        <p class="lead">Фото профиля не загружено</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Информация о водителе</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Имя пользователя:</strong> {{ driver.user.username }}</li>
+                        <li class="list-group-item"><strong>Электронная почта:</strong> {{ driver.user.email }}</li>
+                        <li class="list-group-item"><strong>Номер телефона:</strong> {{ driver.phone_number }}</li>
+                        <li class="list-group-item"><strong>Дата рождения:</strong> {{ driver.date_of_birth }}</li>
+                        <li class="list-group-item"><strong>Водительское удостоверение:</strong> {{ driver.driver_license }}</li>
+                        <li class="list-group-item"><strong>Опыт вождения (в годах):</strong> {{ driver.experience_years }}</li>
+                        <li class="list-group-item"><strong>Статус: </strong> Водитель</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

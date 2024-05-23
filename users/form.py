@@ -24,9 +24,9 @@ class CustomerSignUpForm(UserCreationForm):
             phone_number=self.cleaned_data.get('phone_number'),
             profile_photo=self.cleaned_data.get('profile_photo'),
             date_of_birth=self.cleaned_data.get('date_of_birth'),
-            balance=self.cleaned_data.get('balance')
         )
         return user
+
 
 class DriverSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
@@ -48,6 +48,7 @@ class DriverSignUpForm(UserCreationForm):
         user.save()
         driver = Driver.objects.create(
             user=user,
+            phone_number=self.cleaned_data.get('phone_number'),
             driver_license=self.cleaned_data.get('driver_license'),
             experience_years=self.cleaned_data.get('experience_years'),
             profile_photo=self.cleaned_data.get('profile_photo'),

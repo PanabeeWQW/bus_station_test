@@ -1,18 +1,29 @@
 from users.models import *
 
-class CategoryBus(models.Model):
+class Bus_Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    class Meta:
+        verbose_name = 'Категория авто'
+        verbose_name_plural = 'Категории авто'
+
+    def __str__(self):
+        return self.name
+
+class Bus_Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Категория автобуса'
-        verbose_name_plural = 'Категории автобусов'
+        verbose_name = 'Бренд авто'
+        verbose_name_plural = 'Бренды авто'
 
     def __str__(self):
         return self.name
 
 class Bus(models.Model):
-    brand = models.CharField(max_length=100)
+    bus_photo = models.ImageField(upload_to='images/bus_photos')
+    brand = models.ForeignKey(Bus_Brand, on_delete=models.CASCADE)
+    category = models.ForeignKey(Bus_Category, on_delete=models.CASCADE)
     model = models.CharField(max_length=100)
     transmission_type = models.CharField(max_length=50, choices=[('auto', 'Automatic'), ('manual', 'Manual')])
     year_of_production = models.IntegerField()

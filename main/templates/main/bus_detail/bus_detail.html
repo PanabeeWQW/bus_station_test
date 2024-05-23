@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Детали автобуса
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Детали автобуса</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{ bus.bus_photo.url }}" class="img-fluid rounded" alt="{{ bus.brand }} {{ bus.model }}">
+        </div>
+        <div class="col-md-8">
+            <h2>{{ bus.brand }} {{ bus.model }}</h2>
+            <p><strong>Год выпуска:</strong> {{ bus.year_of_production }}</p>
+            <p><strong>Трансмиссия:</strong> {{ bus.get_transmission_type_display }}</p>
+            <p><strong>Доступность:</strong> {% if bus.is_available %}Доступен{% else %}Не доступен{% endif %}</p>
+            <p><strong>Категория:</strong> {{ bus.category.name }}</p>
+            <p><strong>Бренд:</strong> {{ bus.brand.name }}</p>
+            {% if bus.driver %}
+                <p><strong>Водитель:</strong> {{ bus.driver.name }}</p>
+            {% else %}
+                <p><strong>Водитель:</strong> Нет назначенного водителя</p>
+            {% endif %}
+            <a href="{% url 'catalog' %}" class="btn btn-primary">Назад к каталогу</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

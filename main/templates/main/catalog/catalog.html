@@ -1,0 +1,48 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+Каталог автобусов
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Каталог автобусов</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <h3>Категории</h3>
+            <ul class="list-group">
+                {% for category in categories %}
+                <li class="list-group-item">
+                    <a href="?category={{ category.id }}">{{ category.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <h3 class="mt-4">Бренды</h3>
+            <ul class="list-group">
+                {% for brand in brands %}
+                <li class="list-group-item">
+                    <a href="?brand={{ brand.id }}">{{ brand.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+                {% for bus in buses %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="{{ bus.bus_photo.url }}" class="card-img-top" alt="{{ bus.brand }} {{ bus.model }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ bus.brand }} {{ bus.model }}</h5>
+                            <p class="card-text">Year: {{ bus.year_of_production }}</p>
+                            <p class="card-text">Transmission: {{ bus.get_transmission_type_display }}</p>
+                            <a href="{% url 'bus_detail' bus.id %}" class="btn btn-primary">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

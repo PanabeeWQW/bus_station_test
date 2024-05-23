@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+	{{ user }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Личный кабинет</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if customer.profile_photo %}
+                        <img src="{{ customer.profile_photo.url }}" alt="Profile Photo" class="img-fluid rounded-circle" style="max-width: 200px;">
+                    {% else %}
+                        <p class="lead">Фото профиля не загружено</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Информация о пользователе</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Имя пользователя:</strong> {{ customer.user.username }}</li>
+                        <li class="list-group-item"><strong>Электронная почта:</strong> {{ customer.user.email }}</li>
+                        <li class="list-group-item"><strong>Номер телефона:</strong> {{ customer.phone_number }}</li>
+                        <li class="list-group-item"><strong>Дата рождения:</strong> {{ customer.date_of_birth }}</li>
+                        <li class="list-group-item"><strong>Баланс:</strong> {{ customer.balance }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

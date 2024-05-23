@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+	{{ user }}
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Личный кабинет администратора</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if admin.profile_photo %}
+                        <img src="{{ admin.profile_photo.url }}" alt="Profile Photo" class="img-fluid rounded-circle" style="max-width: 200px;">
+                    {% else %}
+                        <p class="lead">Фото профиля не загружено</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Информация об администраторе</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Статус пользователя:</strong><p style="color: red">Администратор</p></li>
+                        <li class="list-group-item"><strong>Имя пользователя:</strong> {{ admin.user.username }}</li>
+                        <li class="list-group-item"><strong>Электронная почта:</strong> {{ admin.user.email }}</li>
+
+                        <!-- Дополнительная информация об администраторе, если нужно -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -21,7 +21,7 @@ class Bus_Brand(models.Model):
         return self.name
 
 class Bus(models.Model):
-    bus_photo = models.ImageField(upload_to='images/bus_photos')
+    bus_photo = models.ImageField(upload_to='images/bus_images')
     brand = models.ForeignKey(Bus_Brand, on_delete=models.CASCADE)
     category = models.ForeignKey(Bus_Category, on_delete=models.CASCADE)
     model = models.CharField(max_length=100)

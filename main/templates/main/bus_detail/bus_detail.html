@@ -1,12 +1,12 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-    Детали автобуса
+    {{ bus.brand }} {{ bus.model }}
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="mt-5 mb-4">Детали автобуса</h1>
+    <h1 class="mt-5 mb-4">Подробнее о {{ bus.brand }} {{ bus.model }}</h1>
     <div class="row">
         <div class="col-md-4">
             <img src="{{ bus.bus_photo.url }}" class="img-fluid rounded" alt="{{ bus.brand }} {{ bus.model }}">
@@ -21,20 +21,23 @@
                     {% if bus.is_available %}
                         <span class="text-success">Доступен</span>
                     {% else %}
-                        <span class="text-danger">Не доступен</span>
+                        <span class="text-danger">Автобус забронирован</span>
                     {% endif %}
                 </li>
                 <li class="list-group-item"><strong>Категория:</strong> {{ bus.category.name }}</li>
                 <li class="list-group-item"><strong>Бренд:</strong> {{ bus.brand.name }}</li>
                 {% if bus.driver %}
-                    <li class="list-group-item"><strong>Водитель:</strong> {{ bus.driver.name }}</li>
+                    <li class="list-group-item"><strong>Водитель:</strong> {{ bus.driver.first_name }} {{ bus.driver.last_name }}</li>
                 {% else %}
                     <li class="list-group-item"><strong>Водитель:</strong> Нет назначенного водителя</li>
                 {% endif %}
             </ul>
+            {% if bus.is_available %}
+                <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
+                <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
+            {% else %}
+            {% endif %}
             <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Назад к каталогу</a>
-            <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
-            <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
         </div>
     </div>
 </div>

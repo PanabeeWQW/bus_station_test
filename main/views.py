@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from .models import *
 
 def index(request):
@@ -11,7 +10,7 @@ def catalog(request):
     selected_category_id = request.GET.get('category')
     selected_brand_id = request.GET.get('brand')
 
-    buses = Bus.objects.filter(is_available=True)
+    buses = Bus.objects.all()
 
     if selected_category_id:
         buses = buses.filter(category_id=selected_category_id)
@@ -24,7 +23,6 @@ def catalog(request):
 def bus_detail(request, bus_id):
     bus = get_object_or_404(Bus, id=bus_id)
     return render(request, 'main/bus_detail/bus_detail.html', {'bus': bus})
-
 
 def order_with_driver(request, bus_id):
     if request.method == 'POST':
@@ -58,15 +56,7 @@ def order_with_driver(request, bus_id):
         # Проверяем, аутентифицирован ли пользователь
         if request.user.is_authenticated:
             # Если пользователь аутентифицирован, отображаем форму заказа
-            return render(request, 'main/order/order_with_driver.html', {'bus': get_object_or_404(Bus, id=bus_id)})
+            return render(request, 'main/order/order_with_driver.html', {'bus': get_object_or_404(Bus, id=bus_id), 'order': None})
         else:
             # Если пользователь не аутентифицирован, перенаправляем на страницу регистрации
             return redirect('register')  # Предполагается, что у вас есть URL с именем 'register'
-
-
-def order_detail(request, order_id):
-    # Получаем объект заказа по его идентификатору
-    order = get_object_or_404(Order, id=order_id)
-
-    # Передаем объект заказа в контекст для отображения на странице
-    return render(request, 'main/order/order_detail.html', {'order': order})

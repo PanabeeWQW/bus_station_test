@@ -33,6 +33,7 @@ class Bus(models.Model):
     class Meta:
         verbose_name = 'Автобус'
         verbose_name_plural = 'Автобусы'
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)

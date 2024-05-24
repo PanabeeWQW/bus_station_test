@@ -18,11 +18,21 @@
             <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
         </div>
         <div class="mb-3">
-            <label for="start_point" class="form-label">Место старта:</label>
+            <label for="start_point" class="form-label">Начало маршрута:</label>
             <input type="text" class="form-control" id="start_point" name="start_point" required>
         </div>
+        <div id="additional-points-container">
+            <div class="mb-3">
+                <label for="additional_points" class="form-label">Дополнительные точки маршрута:</label>
+                <div class="input-group">
+                    <input class="form-control additional-point" name="additional-point">
+                    <button type="button" class="btn btn-danger remove-point">Удалить</button>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" id="add-point-btn">Добавить точку маршрута</button>
         <div class="mb-3">
-            <label for="end_point" class="form-label">Место финиша:</label>
+            <label for="end_point" class="form-label">Последняя точка маршрута:</label>
             <input type="text" class="form-control" id="end_point" name="end_point" required>
         </div>
         <div class="mb-3">
@@ -35,4 +45,19 @@
         <button type="submit" class="btn btn-primary">Отправить заказ</button>
     </form>
 </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('add-point-btn').addEventListener('click', function() {
+            var container = document.getElementById('additional-points-container');
+            var newPoint = container.querySelector('.mb-3').cloneNode(true);
+            newPoint.querySelector('.additional-point').value = ''; // Очищаем текстовое поле
+            container.appendChild(newPoint);
+            // Добавляем обработчик события для кнопки удаления
+            newPoint.querySelector('.remove-point').addEventListener('click', function() {
+                container.removeChild(newPoint);
+            });
+        });
+    });
+</script>
+
 {% endblock %}

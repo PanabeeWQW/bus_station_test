@@ -1,47 +1,52 @@
 from django.contrib.auth import login
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView
 from users.form import CustomerSignUpForm, DriverSignUpForm
 from users.models import User, Customer, Driver
-from main.models import Order
-from django.shortcuts import get_object_or_404
+from main.models import Order, AdditionalPoints
 
 
 def register(request):
     return render(request, 'registration/register.html')
 
 def personal_account(request):
-    orders = None
-    customer = None
-    driver = None
-
     if request.user.is_authenticated:
         try:
             customer = Customer.objects.get(user=request.user)
-            orders = Order.objects.filter(customer=customer)
+            addpoint = AdditionalPoints.objects.filter(order__customer=customer)
         except Customer.DoesNotExist:
-            pass
+            customer = None
+            addpoint = None
 
         try:
             driver = Driver.objects.get(user=request.user)
         except Driver.DoesNotExist:
-            pass
+            driver = None
 
-    context = {
-        'orders': orders,
-        'customer': customer,
-        'driver': driver,
-    }
+        if customer:
+            orders = Order.objects.filter(customer=customer)
+            for order in orders:
+                order.additional_points.all()
 
-    if customer:
-        return render(request, 'personal_data/personal_user_account.html', context)
-    elif driver:
-        return render(request, 'personal_data/personal_driver_account.html', context)
-    elif request.user.is_superuser:
-        return render(request, 'personal_data/personal_admin_account.html', context)
+            # Print additional points for each order
+            for order in orders:
+                print(f"Order {order.id} additional points:", order.additional_points.all())
+
+            context = {
+                'addpoint': addpoint,
+                'orders': orders,
+                'customer': customer,
+                'driver': driver,
+            }
+            return render(request, 'personal_data/personal_user_account.html', context)
+        elif driver:
+            return render(request, 'personal_data/personal_driver_account.html', {'driver': driver})
+        elif request.user.is_superuser:
+            return render(request, 'personal_data/personal_admin_account.html')
+        else:
+            raise Http404("Page not found")
     else:
-        return render(request, 'registration/login.html')  # Или другая страница, если пользователь не аутентифицирован
-
+        raise Http404("Page not found")
 
 
 class customer_register(CreateView):
@@ -52,14 +57,15 @@ class customer_register(CreateView):
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect('/')
+        return redirect('personal_account')
 
 
 class driver_register(CreateView):
     model = User
     form_class = DriverSignUpForm
     template_name = 'registration/driver_register.html'
+
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        return redirect('/')
+        return redirect('personal_account')

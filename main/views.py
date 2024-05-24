@@ -26,7 +26,6 @@ def bus_detail(request, bus_id):
 
 def order_with_driver(request, bus_id):
     if request.method == 'POST':
-        # Обработка POST-запроса для создания заказа
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         start_point = request.POST.get('start_point')
@@ -47,16 +46,16 @@ def order_with_driver(request, bus_id):
             status='pending'
         )
 
-        # Изменяем статус автобуса на "недоступен"
+        additional_points = request.POST.getlist('additional-point')  # Исправлено на правильное имя поля
+        for point in additional_points:
+            AdditionalPoints.objects.create(order=order, point=point)  # Создаем объекты AdditionalPoint для каждой точки
+
         bus.is_available = False
         bus.save()
 
-        return redirect('order_detail', order_id=order.id)
+        return redirect('personal_account')
     else:
-        # Проверяем, аутентифицирован ли пользователь
         if request.user.is_authenticated:
-            # Если пользователь аутентифицирован, отображаем форму заказа
             return render(request, 'main/order/order_with_driver.html', {'bus': get_object_or_404(Bus, id=bus_id), 'order': None})
         else:
-            # Если пользователь не аутентифицирован, перенаправляем на страницу регистрации
-            return redirect('register')  # Предполагается, что у вас есть URL с именем 'register'
+            return redirect('register')

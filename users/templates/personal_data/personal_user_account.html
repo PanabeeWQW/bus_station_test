@@ -8,7 +8,7 @@
 <div class="container">
     <h1 class="mt-5 mb-4">Личный кабинет</h1>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body text-center">
                     {% if customer.profile_photo %}
@@ -37,26 +37,40 @@
 </div>
 
 <div class="container">
-    <h1 class="mt-5">Детали заказа</h1>
+    <h1 class="mt-5">Детали заказов</h1>
     <div class="row">
         {% if orders %}
             {% for order in orders %}
-                <div class="col-md-6">
-                    <h2>Информация о заказе №{{ order.id }}</h2>
-                    <ul class="list-group">
-                        <li class="list-group-item"><strong>Дата начала аренды:</strong> {{ order.start_date }}</li>
-                        <li class="list-group-item"><strong>Дата окончания аренды:</strong> {{ order.end_date }}</li>
-                        <li class="list-group-item"><strong>Место старта:</strong> {{ order.start_point }}</li>
-                        <li class="list-group-item"><strong>Место финиша:</strong> {{ order.end_point }}</li>
-                        <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
-                        <li class="list-group-item"><strong>Статус:</strong> {{ order.status }}</li>
-                        <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
-                    </ul>
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Информация о заказе №{{ order.id }}</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Дата начала аренды:</strong> {{ order.start_date }}</li>
+                                <li class="list-group-item"><strong>Дата окончания аренды:</strong> {{ order.end_date }}</li>
+                                <li class="list-group-item"><strong>Начальная точка маршрута:</strong> {{ order.start_point }}</li>
+                                <li class="list-group-item">
+                                    <strong>Дополнительные точки маршрута:</strong>
+                                    <ul>
+                                        {% for point in addpoint %}
+                                            <li>{{ point }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                                <li class="list-group-item"><strong>Последняя точка маршрута:</strong> {{ order.end_point }}</li>
+                                <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
+                                <li class="list-group-item"><strong>Статус:</strong> {{ order.status }}</li>
+                                <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         {% else %}
             <div class="col-md-12">
-                <h2>Текущих заказов нет</h2>
+                <div class="alert alert-info" role="alert">
+                    Текущих заказов нет
+                </div>
             </div>
         {% endif %}
     </div>

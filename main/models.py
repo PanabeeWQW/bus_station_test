@@ -11,7 +11,6 @@ class Bus_Category(models.Model):
 
 class Bus_Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Бренд авто'
@@ -34,6 +33,9 @@ class Bus(models.Model):
         verbose_name = 'Автобус'
         verbose_name_plural = 'Автобусы'
 
+    def __str__(self):
+        return self.model
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
@@ -42,6 +44,7 @@ class Order(models.Model):
     end_date = models.DateTimeField()
     start_point = models.CharField(max_length=200, null=True, blank=True)
     end_point = models.CharField(max_length=200, null=True, blank=True)
+    additional_points = models.ManyToManyField("AdditionalPoints", blank=True, related_name='additional_points')
     payment_method = models.CharField(max_length=50, choices=[('cash', 'Cash'), ('card', 'Card')])
     status = models.CharField(max_length=50,
                               choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')],
@@ -51,3 +54,14 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+
+class AdditionalPoints(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    point = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name = 'Дополнительная точка маршрута'
+        verbose_name_plural = 'Дополнительные точки маршрута'
+
+    def __str__(self):
+        return self.point

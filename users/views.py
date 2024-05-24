@@ -13,11 +13,9 @@ def personal_account(request):
     if request.user.is_authenticated:
         try:
             customer = Customer.objects.get(user=request.user)
-            addpoint = AdditionalPoints.objects.filter(order__customer=customer)
+            addpoint = AdditionalPoints.objects.filter()
         except Customer.DoesNotExist:
             customer = None
-            addpoint = None
-
         try:
             driver = Driver.objects.get(user=request.user)
         except Driver.DoesNotExist:
@@ -25,12 +23,6 @@ def personal_account(request):
 
         if customer:
             orders = Order.objects.filter(customer=customer)
-            for order in orders:
-                order.additional_points.all()
-
-            # Print additional points for each order
-            for order in orders:
-                print(f"Order {order.id} additional points:", order.additional_points.all())
 
             context = {
                 'addpoint': addpoint,

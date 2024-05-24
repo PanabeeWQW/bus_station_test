@@ -45,10 +45,9 @@ def order_with_driver(request, bus_id):
             payment_method=payment_method,
             status='pending'
         )
-
-        additional_points = request.POST.getlist('additional-point')  # Исправлено на правильное имя поля
+        additional_points = request.POST.getlist('additional-point')  # Получаем список дополнительных точек
         for point in additional_points:
-            AdditionalPoints.objects.create(order=order, point=point)  # Создаем объекты AdditionalPoint для каждой точки
+            AdditionalPoints.objects.create(order=order,point=point)  # Создаем объекты AdditionalPoint для каждой точки
 
         bus.is_available = False
         bus.save()

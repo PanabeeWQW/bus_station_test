@@ -52,7 +52,7 @@
                                 <li class="list-group-item">
                                     <strong>Дополнительные точки маршрута:</strong>
                                     <ul>
-                                        {% for point in addpoint %}
+                                        {% for point in order.additional_points.all %}
                                             <li>{{ point }}</li>
                                         {% endfor %}
                                     </ul>

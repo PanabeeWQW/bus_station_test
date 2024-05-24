@@ -44,7 +44,6 @@ class Order(models.Model):
     end_date = models.DateTimeField()
     start_point = models.CharField(max_length=200, null=True, blank=True)
     end_point = models.CharField(max_length=200, null=True, blank=True)
-    additional_points = models.ManyToManyField("AdditionalPoints", blank=True, related_name='additional_points')
     payment_method = models.CharField(max_length=50, choices=[('cash', 'Cash'), ('card', 'Card')])
     status = models.CharField(max_length=50,
                               choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')],
@@ -56,7 +55,7 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
 class AdditionalPoints(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='additional_points')
     point = models.CharField(max_length=200)
 
     class Meta:

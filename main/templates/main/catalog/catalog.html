@@ -42,8 +42,11 @@
                         <img src="{{ bus.bus_photo.url }}" class="card-img-top" alt="{{ bus.brand }} {{ bus.model }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ bus.brand }} {{ bus.model }}</h5>
-                            <p class="card-text">Year: {{ bus.year_of_production }}</p>
-                            <p class="card-text">Transmission: {{ bus.get_transmission_type_display }}</p>
+                            <p class="card-text"><strong>Год выпуска:</strong> {{ bus.year_of_production }}</p>
+                            <p class="card-text"><strong>Коробка передач:</strong> {{ bus.get_transmission_type_display }}</p>
+                            <p class="card-text"><strong>Количество мест:</strong> {{ bus.seats }}</p>
+                            <p class="card-text"><strong>Доступность:</strong> {{ bus.is_available|yesno:"Доступен,Не доступен" }}</p>
+                            <p class="card-text"><strong>Цена за час аренды:</strong> {{ bus.price }}</p>
                             <a href="{% url 'bus_detail' bus.id %}" class="btn btn-primary">Подробнее</a>
                         </div>
                     </div>

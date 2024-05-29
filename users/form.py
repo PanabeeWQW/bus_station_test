@@ -57,3 +57,12 @@ class DriverSignUpForm(UserCreationForm):
             date_of_birth=self.cleaned_data.get('date_of_birth')
         )
         return user
+class ProfilePhotoForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['profile_photo']
+
+class UpdateDriverStatusForm(forms.ModelForm):
+    class Meta:
+        model = Driver
+        fields = ['status']

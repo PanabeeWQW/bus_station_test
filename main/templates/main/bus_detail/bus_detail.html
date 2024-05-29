@@ -1,4 +1,6 @@
 {% extends 'main/base.html' %}
+{% load static %}
+
 {% block title %}
     {{ bus.brand }} {{ bus.model }}
 {% endblock %}
@@ -13,27 +15,11 @@
 
 {% block content %}
 <div class="container">
+    <a href="{% url 'catalog' %}" class="btn btn-success mt-3">Назад к каталогу</a>
     <h1>{{ bus.brand }} {{ bus.model }}</h1>
     <div class="row">
         <div class="col-md-6">
-            <div class="main-photo-slider align-center">
-                <div><img src="{{ bus.bus_photo.url }}" class="img-fluid rounded" alt="{{ bus.brand }} {{ bus.model }}"></div>
-                {% for photo in bus.photos.all %}
-                    <div><img src="{{ photo.photo.url }}" class="img-fluid rounded" alt="Дополнительное фото {{ bus.model }}"></div>
-                {% endfor %}
-            </div>
-            <div class="image-gallery">
-                <h4>Дополнительные фотографии</h4>
-                <div class="row">
-                    {% for photo in bus.photos.all %}
-                        <div class="col-6">
-                            <a href="{{ photo.photo.url }}" data-fancybox="gallery" data-caption="Дополнительное фото {{ bus.model }}">
-                                <img style="width: 300px; height: 180px" src="{{ photo.photo.url }}" class="img-fluid rounded" alt="Дополнительное фото {{ bus.model }}">
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
+            <div><img style="object-fit: cover;" src="{{ bus.bus_photo.url }}" class="img-fluid rounded" alt="{{ bus.brand }} {{ bus.model }}"></div>
         </div>
         <div class="col-md-6">
             <ul class="list-group">
@@ -52,35 +38,56 @@
                 </li>
                 <li class="list-group-item"><strong>Водитель:</strong> {% if bus.driver %}{{ bus.driver.first_name }} {{ bus.driver.last_name }}{% else %}Нет назначенного водителя{% endif %}</li>
             </ul>
-            {% if bus.is_available %}
+            {% if user.is_customer %}
+                <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
+                <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
+                {% elif user.is_employee and bus.driver is None %}
+                <form method="post" action="{% url 'attach_bus' bus.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary mt-3">Закрепить авто</button>
+                </form>
+                {% elif user.is_employee %}
+                {{ empty }}
+                {% else %}
                 <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
                 <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
             {% endif %}
-            <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Назад к каталогу</a>
         </div>
     </div>
-</div>
-{% if bus.bus_photo_panoram %}
-<div class="panorama-container">
-    <h4 class="panorama-title" style="text-align: center">Интерьер салона</h4>
-    <a-scene embedded style="margin: 0 auto; width: 72%; height: 500px;">
-        <a-sky src="{{ bus.bus_photo_panoram.url }}"></a-sky>
-    </a-scene>
-</div>
-{% endif %}
-    <div class="container review">
-    <h2>Отзывы о {{ bus.brand }} {{ bus.model }}</h2>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="review-item">
-                <h5>Отличное авто!</h5>
-                <p>Очень комфортное и просторное. Идеально подходит для дальних поездок.</p>
-            </div>
+    <div style="margin-top: 100px" class="image-gallery">
+        <h4 style="text-align: center">Дополнительные фотографии</h4>
+        <div class="slick-slider">
+            {% for photo in bus.photos.all %}
+                <div class="col-6">
+                    <a href="{{ photo.photo.url }}" data-fancybox="gallery" data-caption="Дополнительное фото {{ bus.model }}">
+                        <img src="{{ photo.photo.url }}" class="gallery-image img-fluid rounded" alt="Дополнительное фото {{ bus.model }}">
+                    </a>
+                </div>
+            {% endfor %}
         </div>
-        <div class="col-md-6">
-            <div class="review-item">
-                <h5>Рекомендую!</h5>
-                <p>Отличная машина по соотношению цена-качество. Все работает отлично, никаких нареканий.</p>
+    </div>
+    {% if bus.bus_photo_panoram %}
+    <div style="margin-top: 100px" class="panorama-container">
+        <h4 class="panorama-title" style="text-align: center">Интерьер салона</h4>
+        <a-scene embedded style="margin: 0 auto; width: 100%; height: 600px;">
+            <a-sky src="{{ bus.bus_photo_panoram.url }}"></a-sky>
+        </a-scene>
+    </div>
+    {% endif %}
+    <div style="margin-top: 100px" class="container review">
+        <h2>Отзывы о {{ bus.brand }} {{ bus.model }}</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="review-item">
+                    <h5>Отличное авто!</h5>
+                    <p>Очень комфортное и просторное. Идеально подходит для дальних поездок.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="review-item">
+                    <h5>Рекомендую!</h5>
+                    <p>Отличная машина по соотношению цена-качество. Все работает отлично, никаких нареканий.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -89,20 +96,22 @@
 
 {% block scripts %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $('.main-photo-slider').slick({
-            dots: true,
-            infinite: true,
-            speed: 500,
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            autoplay: true,
-            autoplaySpeed: 2000
-        });
-    });
+$(document).ready(function(){
+  $('.slick-slider').slick({
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    infinite: true,
+    dots: true,
+    arrows: true,
+    adaptiveHeight: true,
+    autoplay: true,           // Автопрокрутка
+    autoplaySpeed: 3000,      // Интервал в миллисекундах (3 секунды)
+  });
+});
 </script>
 {% endblock %}

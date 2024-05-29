@@ -12,6 +12,13 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
 
 class Driver(models.Model):
+    STATUS_CHOICES = (
+        ('online', 'На линии'),
+        ('returning', 'Возвращаюсь в парк'),
+        ('on_order', 'Выполняю заказ'),
+        ('offline', 'Не в сети'),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     driver_license = models.CharField(max_length=50)
     experience_years = models.IntegerField(validators=[MinValueValidator(0)])
@@ -24,6 +31,7 @@ class Driver(models.Model):
     class Meta:
         verbose_name = 'Водитель'
         verbose_name_plural = 'Водители'
+
 class Customer(models.Model):
     profile_photo = models.ImageField(upload_to='images/user_profile_photos', null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)

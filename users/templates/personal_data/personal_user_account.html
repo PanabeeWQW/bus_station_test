@@ -16,6 +16,13 @@
                     {% else %}
                         <p class="lead">Фото профиля не загружено</p>
                     {% endif %}
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3" style="margin-top: 10px">
+                            <input type="file" name="profile_photo" class="form-control" id="id_profile_photo" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Изменить фото</button>
+                    </form>
                 </div>
             </div>
         </div>

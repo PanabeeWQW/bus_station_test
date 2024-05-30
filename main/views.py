@@ -1,8 +1,23 @@
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
+from datetime import datetime
+from .forms import CancelOrderForm
 from .models import *
+
 
 def index(request):
     return render(request, 'main/index.html')
+
+def about_us(request):
+    return render(request, 'main/about/about_us.html')
+
+def contact_us(request):
+    return render(request, 'main/contacts/contacts.html')
+
+def license_agreement(request):
+    return render(request, 'main/about/license_agreement.html')
 
 def catalog(request):
     categories = Bus_Category.objects.all()
@@ -22,39 +37,92 @@ def catalog(request):
 
 def bus_detail(request, bus_id):
     bus = get_object_or_404(Bus, id=bus_id)
-    return render(request, 'main/bus_detail/bus_detail.html', {'bus': bus})
+    order = Order.objects.filter(bus=bus).last()
+    context = {'bus': bus, 'order': order}
+    return render(request, 'main/bus_detail/bus_detail.html', context)
 
 def order_with_driver(request, bus_id):
     if request.method == 'POST':
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
+        start_date_str = request.POST.get('start_date')
+        end_date_str = request.POST.get('end_date')
+
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%dT%H:%M')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%dT%H:%M')
+
+        start_date = timezone.make_aware(start_date, timezone.get_current_timezone())
+        end_date = timezone.make_aware(end_date, timezone.get_current_timezone())
+
+        if start_date <= timezone.now() or end_date <= timezone.now() or start_date >= end_date:
+            return HttpResponseBadRequest("Выберите корректные даты для заказа.")
+
         start_point = request.POST.get('start_point')
         end_point = request.POST.get('end_point')
         payment_method = request.POST.get('payment_method')
 
         bus = get_object_or_404(Bus, id=bus_id)
 
-        order = Order.objects.create(
-            customer=request.user.customer,
-            bus=bus,
-            driver_needed=True,
-            start_date=start_date,
-            end_date=end_date,
-            start_point=start_point,
-            end_point=end_point,
-            payment_method=payment_method,
-            status='pending'
-        )
-        additional_points = request.POST.getlist('additional-point')  # Получаем список дополнительных точек
-        for point in additional_points:
-            AdditionalPoints.objects.create(order=order,point=point)  # Создаем объекты AdditionalPoint для каждой точки
+        if not Order.objects.filter(bus=bus, start_date__lte=end_date, end_date__gte=start_date).exists():
+            order = Order.objects.create(
+                customer=request.user.customer,
+                bus=bus,
+                driver_needed=True,
+                start_date=start_date,
+                end_date=end_date,
+                start_point=start_point,
+                end_point=end_point,
+                payment_method=payment_method,
+                status='pending'
+            )
+            additional_points = request.POST.getlist('additional-point')
+            for point in additional_points:
+                AdditionalPoints.objects.create(order=order, point=point)
 
-        bus.is_available = False
-        bus.save()
+            bus.is_available = False
+            bus.save()
 
-        return redirect('personal_account')
+            return redirect('personal_account')
+        else:
+            return HttpResponseBadRequest("Автобус уже забронирован на выбранные даты.")
     else:
         if request.user.is_authenticated:
-            return render(request, 'main/order/order_with_driver.html', {'bus': get_object_or_404(Bus, id=bus_id), 'order': None})
+            return render(request, 'main/order/order_with_driver.html',
+                          {'bus': get_object_or_404(Bus, id=bus_id), 'order': None})
         else:
             return redirect('register')
+
+
+@login_required
+def handle_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    driver = get_object_or_404(Driver, user=request.user)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'accept':
+            order.status = 'confirmed'
+            order.save()
+            return redirect('personal_account')
+        elif action == 'reject':
+            form = CancelOrderForm(request.POST, instance=order)
+            if form.is_valid():
+                if Driver.objects.exclude(id=driver.id).exists():
+                    order.status = 'cancelled'
+                    order.save()
+                    # Отправка уведомления администратору (реализовать по необходимости)
+                    return redirect('personal_account')
+                else:
+                    return HttpResponseForbidden("Нет других водителей для переназначения заказа.")
+        else:
+            form = CancelOrderForm(instance=order)
+        context = {
+            'order': order,
+            'form': form,
+        }
+        return render(request, '', context)
+
+    form = CancelOrderForm(instance=order)
+    context = {
+        'order': order,
+        'form': form,
+    }
+    return render(request, '', context)

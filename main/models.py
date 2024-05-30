@@ -24,6 +24,7 @@ class Bus_Brand(models.Model):
 class Bus(models.Model):
     bus_photo = models.ImageField(upload_to='images/bus_images', blank=True, null=True)
     bus_photo_panoram = models.ImageField(upload_to='images/bus_image_panoram', blank=True, null=True)
+    license_plate = models.CharField(max_length=10, blank=True, null=True)
     seats = models.IntegerField(default=4)
     bus_description = models.TextField(max_length=500, blank=True, null=True)
     brand = models.ForeignKey(Bus_Brand, on_delete=models.CASCADE)
@@ -66,7 +67,7 @@ class Order(models.Model):
                               choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')],
                               default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
-    driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True, blank=True)
+    cancellation_reason = models.TextField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Заказ'

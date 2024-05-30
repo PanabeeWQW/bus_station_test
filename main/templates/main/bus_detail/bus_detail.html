@@ -11,6 +11,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+        <style>
+        .slick-slider {
+            text-align: center;
+        }
+
+        .slick-slider img {
+            display: inline-block;
+            margin: 0 auto;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -33,13 +43,12 @@
                     {% if bus.is_available %}
                         <span class="text-success">Доступен</span>
                     {% else %}
-                        <span class="text-danger">Автобус забронирован</span>
+                        <span class="text-danger"> Автобус забронирован до: {{ order.end_date }}</span>
                     {% endif %}
                 </li>
                 <li class="list-group-item"><strong>Водитель:</strong> {% if bus.driver %}{{ bus.driver.first_name }} {{ bus.driver.last_name }}{% else %}Нет назначенного водителя{% endif %}</li>
             </ul>
-            {% if user.is_customer %}
-                <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
+            {% if user.is_customer and bus.driver is None %}
                 <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
                 {% elif user.is_employee and bus.driver is None %}
                 <form method="post" action="{% url 'attach_bus' bus.id %}">
@@ -50,22 +59,27 @@
                 {{ empty }}
                 {% else %}
                 <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
-                <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
+                {% if bus.driver is None %}
+                    <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
+                    {% else %}
+                    {{ empty }}
+                {% endif %}
             {% endif %}
         </div>
     </div>
-    <div style="margin-top: 100px" class="image-gallery">
-        <h4 style="text-align: center">Дополнительные фотографии</h4>
-        <div class="slick-slider">
-            {% for photo in bus.photos.all %}
-                <div class="col-6">
-                    <a href="{{ photo.photo.url }}" data-fancybox="gallery" data-caption="Дополнительное фото {{ bus.model }}">
-                        <img src="{{ photo.photo.url }}" class="gallery-image img-fluid rounded" alt="Дополнительное фото {{ bus.model }}">
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
+<div style="margin-top: 100px" class="image-gallery text-center"> <!-- Добавлен класс text-center -->
+    <h4 style="text-align: center">Дополнительные фотографии</h4>
+    <div class="slick-slider">
+        {% for photo in bus.photos.all %}
+            <div class="col-6">
+                <a href="{{ photo.photo.url }}" data-fancybox="gallery" data-caption="Дополнительное фото {{ bus.model }}">
+                    <img src="{{ photo.photo.url }}" class="gallery-image img-fluid rounded" alt="Дополнительное фото {{ bus.model }}">
+                </a>
+            </div>
+        {% endfor %}
     </div>
+</div>
+
     {% if bus.bus_photo_panoram %}
     <div style="margin-top: 100px" class="panorama-container">
         <h4 class="panorama-title" style="text-align: center">Интерьер салона</h4>

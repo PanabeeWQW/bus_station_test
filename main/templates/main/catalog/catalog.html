@@ -45,8 +45,13 @@
                             <p class="card-text"><strong>Год выпуска:</strong> {{ bus.year_of_production }}</p>
                             <p class="card-text"><strong>Коробка передач:</strong> {{ bus.get_transmission_type_display }}</p>
                             <p class="card-text"><strong>Количество мест:</strong> {{ bus.seats }}</p>
-                            <p class="card-text"><strong>Доступность:</strong> {{ bus.is_available|yesno:"Доступен,Не доступен" }}</p>
+                            <p class="card-text"><strong>Доступность:</strong> {{ bus.is_available|yesno:"Доступен,Бронь на будущее" }}</p>
                             <p class="card-text"><strong>Цена за час аренды:</strong> {{ bus.price }}</p>
+                            {% if bus.driver is None %}
+                                <p class="card-text"><strong>Услуга каршеринга:</strong> Да</p>
+                                {% else %}
+                                <p class="card-text"><strong>Услуга каршеринга:</strong> Нет</p>
+                            {% endif %}
                             <a href="{% url 'bus_detail' bus.id %}" class="btn btn-primary">Подробнее</a>
                         </div>
                     </div>

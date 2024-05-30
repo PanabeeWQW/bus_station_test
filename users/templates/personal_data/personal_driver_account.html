@@ -16,32 +16,48 @@
                     {% else %}
                         <p class="lead">Фото профиля не загружено</p>
                     {% endif %}
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3" style="margin-top: 10px">
+                            <input type="file" name="profile_photo" class="form-control" id="id_profile_photo" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Изменить фото</button>
+                    </form>
                 </div>
             </div>
 
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h3 class="card-title">Закрепленный автомобиль</h3>
-                    {% if bus.driver %}
-                        <p><strong>Марка и модель:</strong> {{ bus.brand }} {{ bus.model }}</p>
-                        <p><strong>Государственный номер:</strong> {{ driver.bus.license_plate }}</p>
-                        <form method="post" action="{% url 'bus_dettach' bus.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger" name="action" value="bus_dettach">Открепить автомобиль</button>
-                        </form>
-                    {% else %}
+            {% if buses %}
+                {% for bus in buses %}
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h3 class="card-title">Закрепленный автомобиль</h3>
+                            <p><strong>Марка и модель:</strong> {{ bus.brand }} {{ bus.model }}</p>
+                            <p><strong>Государственный номер:</strong> {{ bus.license_plate }}</p>
+                            <form method="post" action="{% url 'bus_dettach' bus.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" name="action" value="bus_dettach">Открепить автомобиль</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Закрепленный автомобиль</h3>
                         <p>Вы не закреплены за каким-либо автомобилем.</p>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
+
         <div class="col-md-8">
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title">Информация о водителе</h3>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Пользователя:</strong> {{ driver.user.username }}</li>
+                        <li class="list-group-item"><strong>Пользователь:</strong> {{ driver.user.username }}</li>
                         <li class="list-group-item"><strong>Ваше имя:</strong> {{ driver.user.first_name }}</li>
+                        <li class="list-group-item"><strong>Ваша фамилия:</strong> {{ driver.user.last_name }}</li>
                         <li class="list-group-item"><strong>Электронная почта:</strong> {{ driver.user.email }}</li>
                         <li class="list-group-item"><strong>Номер телефона:</strong> {{ driver.phone_number }}</li>
                         <li class="list-group-item"><strong>Дата рождения:</strong> {{ driver.date_of_birth }}</li>
@@ -51,7 +67,7 @@
                         <li class="list-group-item">
                             <strong>Статус: </strong>
                             {% if driver.status == 'online' %}
-                                <span class="text-success">На линии</span>
+                                <span class="text-success">На линии 🤙🤙🤙</span>
                             {% elif driver.status == 'returning' %}
                                 <span class="text-warning">Возвращаюсь в парк</span>
                             {% elif driver.status == 'on_order' %}
@@ -100,25 +116,29 @@
                                     <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
                                     <li class="list-group-item"><strong>Статус:</strong> {{ order.status }}</li>
                                     <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
+                                    <li class="list-group-item"><strong>Водитель:</strong> {{ order.bus.driver.user.get_full_name }}</li>
                                 </ul>
 
                                 <!-- Форма принятия или отклонения заказа -->
-                                <form method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="order_id" value="{{ order.id }}">
-                                    <div class="form-group mt-3">
-                                        <button type="submit" class="btn btn-success" name="action" value="accept">Принять заказ</button>
-                                        <button type="submit" class="btn btn-danger" name="action" value="reject">Отклонить заказ</button>
-                                    </div>
-                                </form>
+                                {% if order.status != 'confirmed' %}
+                                    <form method="post" action="{% url 'handle_order' order.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-group mt-3">
+                                            <button type="submit" class="btn btn-success" name="action" value="accept">Принять заказ</button>
+                                            <button type="submit" class="btn btn-danger" name="action" value="reject">Отклонить заказ</button>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <li class="list-group-item"><strong>Статус заказа: </strong>Принят! Удачной поездки!</li>
+                                {% endif %}
                                 <!-- /Форма принятия или отклонения заказа -->
                             </div>
                         </div>
                     {% endfor %}
-                {% else %}
-                    <div class="alert alert-info mt-4" role="alert">
-                        Нет доступных заказов
-                    </div>
+            {% else %}
+            <div class="alert alert-info mt-4" role="alert">
+                Нет доступных заказов
+            </div>
                 {% endif %}
             {% endif %}
             <!-- /Отображение заказов -->

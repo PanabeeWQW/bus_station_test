@@ -66,7 +66,12 @@
                                 </li>
                                 <li class="list-group-item"><strong>Последняя точка маршрута:</strong> {{ order.end_point }}</li>
                                 <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
-                                <li class="list-group-item"><strong>Статус:</strong> {{ order.status }}</li>
+                                <li class="list-group-item"><strong>Статус:</strong>
+                                {% if order.status == 'confirmed' %}
+                                    Водитель принял заказ! Он уже в пути!
+                                    <li class="list-group-item"><strong>Контакты водителя:</strong> {{ order.bus.driver.phone_number }}</li>
+                                {% endif %}
+                                </li>
                                 <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
                             </ul>
                         </div>

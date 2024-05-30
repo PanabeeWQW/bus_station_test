@@ -67,6 +67,10 @@
                         <input type="password" id="id_password2" name="password2" class="form-control">
                         <div id="id_password2" class="form-text">Подтвердите пароль</div>
                     </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="id_agree" name="agree" required>
+                        <label class="form-check-label" for="id_agree"><a href="{% url 'license' %}">Я согласен с условиями лицензионного соглашения</a></label>
+                    </div>
                 </div>
             </div>
 

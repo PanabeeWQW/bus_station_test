@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon/favicon.png' %}">
     {% block links %}
-
+        
     {% endblock %}
     {% load bootstrap5 %}
     {% bootstrap_css %}
@@ -31,14 +33,14 @@
               О компании
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">О нас</a></li>
+            <li><a class="dropdown-item" href="{% url 'about' %}">О нас</a></li>
             <li><a class="dropdown-item" href="#">Отзывы о компании</a></li>
               <li><a class="dropdown-item" href="#">Блог компании</a></li>
               <li><a class="dropdown-item" href="#">Техническая поддержка</a></li>
               <li><a class="dropdown-item" href="#">Услуги компании</a></li>
-              <li><a class="dropdown-item" href="#">Контакты</a></li>
+              <li><a class="dropdown-item" href="{% url 'contact' %}">Контакты</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Лицензионное соглашение</a></li>
+            <li><a class="dropdown-item" href="{% url 'license' %}">Лицензионное соглашение</a></li>
           </ul>
         </li>
             </ul>
@@ -51,13 +53,13 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'personal_account' %}">
                             {% if user.customer.profile_photo %}
-                                <img src="{{ user.customer.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="max-width: 35px; margin-right: 10px">
+                                <img src="{{ user.customer.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="max-width: 30px; margin-right: 10px">
                             {% endif %}
                             {% if user.driver.profile_photo %}
-                                <img src="{{ user.driver.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="max-width: 35px; margin-right: 10px">
+                                <img src="{{ user.driver.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="max-width: 30px; margin-right: 10px">
                             {% endif %} 
                             {% if user.admin.profile_photo %}
-                                <img src="{{ user.admin.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="max-width: 35px; margin-right: 10px">
+                                <img src="{{ user.admin.profile_photo.url }}" alt="Profile Photo" class="rounded-circle" style="max-width: 30px; margin-right: 10px">
                             {% endif %} 
                             Личный кабинет
                         </a>

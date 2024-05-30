@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView
 from .form import *
-from users.models import User, Customer, Driver
+from users.models import *
 from main.models import Order, AdditionalPoints, Bus
 
 
@@ -51,6 +51,7 @@ def handle_customer_account(request, customer):
 
 def handle_driver_account(request, driver):
     if request.method == 'POST':
+        form = ProfilePhotoForm(request.POST, request.FILES, instance=driver)
         status_form = UpdateDriverStatusForm(request.POST, instance=driver)
         if status_form.is_valid():
             status_form.save()
@@ -58,14 +59,17 @@ def handle_driver_account(request, driver):
     else:
         status_form = UpdateDriverStatusForm(instance=driver)
 
-    bus = Bus.objects.filter(driver=driver).first()
-    orders = Order.objects.filter(driver=driver) if driver.status == 'online' else None
+    # Получение всех автобусов, закрепленных за водителем
+    buses = Bus.objects.filter(driver=driver)
+
+    # Получение всех заказов, связанных с автобусами водителя
+    orders = Order.objects.filter(bus__driver=driver) if driver.status == 'online' else None
 
     context = {
         'driver': driver,
         'status_form': status_form,
         'orders': orders,
-        'bus': bus,
+        'buses': buses,
     }
     return render(request, 'personal_data/personal_driver_account.html', context)
 

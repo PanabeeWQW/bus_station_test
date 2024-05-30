@@ -1,0 +1,40 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Связь с нами
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Связь с нами</h1>
+    <p>Мы всегда готовы ответить на ваши вопросы и предоставить дополнительную информацию. Не стесняйтесь обращаться к нам по любым вопросам, связанным с нашими услугами и работой компании "Автобусная гавань".</p>
+
+    <h2>Наши контакты</h2>
+    <p>Адрес: ул. Примерная, дом 123, г. Примерный</p>
+    <p>Телефон: +7 (XXX) XXX-XX-XX</p>
+    <p>Email: info@avtobusnaya-gavan.ru</p>
+
+    <h2>График работы</h2>
+    <p>Понедельник - Пятница: с 9:00 до 18:00</p>
+    <p>Суббота - Воскресенье: выходной</p>
+
+    <h2>Онлайн обратная связь</h2>
+    <p>Вы также можете связаться с нами, заполнив форму обратной связи ниже:</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Ваше имя</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Ваш Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Ваше сообщение</label>
+            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+</div>
+{% endblock %}

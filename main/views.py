@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from datetime import datetime
@@ -15,6 +15,15 @@ def about_us(request):
 
 def contact_us(request):
     return render(request, 'main/contacts/contacts.html')
+
+def support(request):
+    return render(request, 'main/support/support.html')
+
+def reviews(request):
+    return render(request, 'main/reviews/reviews.html')
+
+def service(request):
+    return render(request, 'main/about/service.html')
 
 def license_agreement(request):
     return render(request, 'main/about/license_agreement.html')
@@ -61,7 +70,7 @@ def order_with_driver(request, bus_id):
 
         bus = get_object_or_404(Bus, id=bus_id)
 
-        if not Order.objects.filter(bus=bus, start_date__lte=end_date, end_date__gte=start_date).exists():
+        if not Order.objects.filter(bus=bus, start_date__lte=end_date, end_date__gte=start_date, is_active=True, status='confirmed').exists():
             order = Order.objects.create(
                 customer=request.user.customer,
                 bus=bus,
@@ -90,7 +99,6 @@ def order_with_driver(request, bus_id):
         else:
             return redirect('register')
 
-
 @login_required
 def handle_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -107,11 +115,16 @@ def handle_order(request, order_id):
             if form.is_valid():
                 if Driver.objects.exclude(id=driver.id).exists():
                     order.status = 'cancelled'
+                    order.is_active = False
+                    order.cancelled_by = 'driver'
                     order.save()
-                    # Отправка уведомления администратору (реализовать по необходимости)
+                    bus = order.bus
+                    if not bus.check_availability():
+                        bus.is_available = True
+                        bus.save()
                     return redirect('personal_account')
                 else:
-                    return HttpResponseForbidden("Нет других водителей для переназначения заказа.")
+                    return HttpResponseForbidden("No other drivers available to reassign the order.")
         else:
             form = CancelOrderForm(instance=order)
         context = {
@@ -126,3 +139,6 @@ def handle_order(request, order_id):
         'form': form,
     }
     return render(request, '', context)
+
+def carsharing(request, bus_id):
+    return render(request, 'main/order/carsharing.html')

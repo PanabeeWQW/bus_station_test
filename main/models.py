@@ -2,7 +2,18 @@ from django.db import models
 from users.models import *
 
 class Bus_Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    BUS = 'Bus'
+    MICROBUS = 'Microbus'
+    MINIVAN = 'Minivan'
+
+    CATEGORY_CHOICES = [
+        (BUS, 'Автобусы'),
+        (MICROBUS, 'Микроавтобусы'),
+        (MINIVAN, 'Минивэны'),
+    ]
+
+    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
+
 
     class Meta:
         verbose_name = 'Категория авто'
@@ -43,6 +54,10 @@ class Bus(models.Model):
     def __str__(self):
         return self.model
 
+    def check_availability(self):
+        active_orders = self.order_set.filter(is_active=True, status='confirmed')
+        return active_orders.exists()
+
 class BusPhoto(models.Model):
     bus = models.ForeignKey(Bus, related_name='photos', on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='images/bus_additional_photos', blank=True, null=True)
@@ -67,11 +82,14 @@ class Order(models.Model):
                               choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')],
                               default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
-    cancellation_reason = models.TextField(null=True, blank=True)
+    cancel_reason = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)  # Новое поле
+    cancelled_by = models.CharField(max_length=50, choices=[('user', 'User'), ('driver', 'Driver')], null=True, blank=True)
 
     class Meta:
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
+
 
 class AdditionalPoints(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='additional_points')
@@ -83,3 +101,14 @@ class AdditionalPoints(models.Model):
 
     def __str__(self):
         return self.point
+
+class BusReview(models.Model):
+    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    rating = models.IntegerField(default=5)
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Отзыв о автобусе'
+        verbose_name_plural = 'Отзывы о автобусах'

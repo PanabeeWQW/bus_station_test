@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Заказ автомобиля в каршеринге
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">Взять авто в каршеринг</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Дата начала аренды:</label>
+            <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+        </div>
+        <div class="mb-3">
+            <label for="end_date" class="form-label">Дата окончания аренды:</label>
+            <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+        </div>
+        <div class="mb-3">
+            <label for="payment_method" class="form-label">Метод оплаты:</label>
+            <select class="form-select" id="payment_method" name="payment_method" required>
+                <option value="cash">Наличные</option>
+                <option value="card">Карта</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить заказ</button>
+    </form>
+</div>
+{% endblock %}

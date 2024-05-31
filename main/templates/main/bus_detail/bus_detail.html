@@ -60,7 +60,7 @@
                 {% else %}
                 <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
                 {% if bus.driver is None %}
-                    <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
+                    <a href="{% url 'carsharing' bus.id %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
                     {% else %}
                     {{ empty }}
                 {% endif %}

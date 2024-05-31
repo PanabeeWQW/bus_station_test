@@ -1,6 +1,6 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView
 from .form import *
@@ -118,3 +118,23 @@ def bus_dettach(request, bus_id):
         return redirect('personal_account')
     else:
         return redirect('catalog')
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    if request.method == 'POST':
+        cancel_reason = request.POST.get('cancel_reason')
+        if order.status != 'cancelled':
+            order.status = 'cancelled'
+            order.cancel_reason = cancel_reason
+            order.is_active = False
+            order.cancelled_by = 'customer'
+            order.save()
+            bus = order.bus
+            if not bus.check_availability():
+                bus.is_available = True
+                bus.save()
+        return redirect('personal_account')
+    else:
+        return HttpResponseBadRequest("Invalid request method")

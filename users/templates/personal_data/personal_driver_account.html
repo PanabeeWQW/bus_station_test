@@ -67,7 +67,7 @@
                         <li class="list-group-item">
                             <strong>Статус: </strong>
                             {% if driver.status == 'online' %}
-                                <span class="text-success">На линии 🤙🤙🤙</span>
+                                <span class="text-success">На линии</span>
                             {% elif driver.status == 'returning' %}
                                 <span class="text-warning">Возвращаюсь в парк</span>
                             {% elif driver.status == 'on_order' %}
@@ -120,16 +120,26 @@
                                 </ul>
 
                                 <!-- Форма принятия или отклонения заказа -->
-                                {% if order.status != 'confirmed' %}
+                                {% if order.status != 'confirmed' and order.status != 'cancelled' %}
                                     <form method="post" action="{% url 'handle_order' order.id %}">
                                         {% csrf_token %}
                                         <div class="form-group mt-3">
+                                            <form action="{% url 'cancel_order' order.id%}">
+                                            <label for="cancel_reason">Сообщение: </label>
+                                            <textarea style="margin-bottom: 10px" id="cancel_reason" name="cancel_reason" class="form-control" required></textarea>
                                             <button type="submit" class="btn btn-success" name="action" value="accept">Принять заказ</button>
                                             <button type="submit" class="btn btn-danger" name="action" value="reject">Отклонить заказ</button>
+                                            </form>
                                         </div>
                                     </form>
                                 {% else %}
-                                    <li class="list-group-item"><strong>Статус заказа: </strong>Принят! Удачной поездки!</li>
+                                    <li class="list-group-item"><strong>Статус заказа: </strong>
+                                        {% if order.status == 'confirmed' %}
+                                            Принят! Удачной поездки!
+                                        {% elif order.status == 'cancelled' %}
+                                            Отменен.
+                                        {% endif %}
+                                    </li>
                                 {% endif %}
                                 <!-- /Форма принятия или отклонения заказа -->
                             </div>

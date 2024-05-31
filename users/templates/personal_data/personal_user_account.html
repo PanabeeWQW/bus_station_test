@@ -70,10 +70,29 @@
                                 {% if order.status == 'confirmed' %}
                                     Водитель принял заказ! Он уже в пути!
                                     <li class="list-group-item"><strong>Контакты водителя:</strong> {{ order.bus.driver.phone_number }}</li>
+                                {% elif order.status == 'cancelled' %}
+                                    <span class="text-danger">
+                                        {% if order.cancelled_by == 'customer' %}
+                                            Пользователь отменил заказ
+                                        {% elif order.cancelled_by == 'driver' %}
+                                            Водитель отменил заказ
+                                        {% endif %}
+                                    </span>
+                                    <li class="list-group-item"><strong>Сообщение:</strong>{{ order.cancel_reason }}</li>
                                 {% endif %}
                                 </li>
                                 <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
                             </ul>
+                            {% if order.status != 'cancelled' %}
+                                <form method="post" action="{% url 'cancel_order' order.id %}">
+                                    {% csrf_token %}
+                                    <div class="form-group mt-3">
+                                        <label for="cancel_reason">Причина отмены:</label>
+                                        <textarea id="cancel_reason" name="cancel_reason" class="form-control" required></textarea>
+                                        <button type="submit" class="btn btn-danger mt-2">Подать заявку</button>
+                                    </div>
+                                </form>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

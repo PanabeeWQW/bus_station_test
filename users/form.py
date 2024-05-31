@@ -44,7 +44,7 @@ class DriverSignUpForm(UserCreationForm):
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
-        user.is_driver = True
+        user.is_employee = True
         user.save()
         driver = Driver.objects.create(
             user=user,

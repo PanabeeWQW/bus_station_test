@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Наши услуги
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-5 mb-4">Наши услуги</h1>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <img src="bus_image.jpg" class="card-img-top" alt="Автобусы с водителем">
+                <div class="card-body">
+                    <h5 class="card-title">Аренда автобусов с водителем</h5>
+                    <p class="card-text">Мы предоставляем полный спектр услуг по аренде автобусов с водителем для любых мероприятий и поездок. Наши автобусы обеспечат комфортное и безопасное передвижение для групп различного размера.</p>
+                    <a href="#" class="btn btn-primary">Узнать больше</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <img src="minivan_image.jpg" class="card-img-top" alt="Каршеринг минивенов">
+                <div class="card-body">
+                    <h5 class="card-title">Каршеринг минивенов</h5>
+                    <p class="card-text">Наш сервис каршеринга минивенов позволяет арендовать компактные и удобные минивены для вашей поездки. Простота бронирования, гибкие тарифы и удобное расположение пунктов выдачи делают наш сервис идеальным выбором для вашей поездки.</p>
+                    <a href="#" class="btn btn-primary">Узнать больше</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

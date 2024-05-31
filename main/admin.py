@@ -22,4 +22,4 @@ admin.site.register(Bus, BusAdmin)
 admin.site.register(Bus_Brand)
 admin.site.register(Bus_Category)
 admin.site.register(Order)
-
+admin.site.register(BusReview)

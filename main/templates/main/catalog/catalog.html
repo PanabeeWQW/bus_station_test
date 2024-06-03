@@ -48,9 +48,20 @@
                             <p class="card-text"><strong>Доступность:</strong> {{ bus.is_available|yesno:"Доступен,Бронь на будущее" }}</p>
                             <p class="card-text"><strong>Цена за час аренды:</strong> {{ bus.price }}</p>
                             {% if bus.driver is None %}
-                                <p class="card-text"><strong>Услуга каршеринга:</strong> Да</p>
-                                {% else %}
-                                <p class="card-text"><strong>Услуга каршеринга:</strong> Нет</p>
+                                <p class="card-text"><strong>Услуга каршеринга:</strong> Имеется</p>
+                            {% else %}
+                                <p class="card-text"><strong>Услуга каршеринга:</strong> Отсутствует</p>
+                                <p class="card-text"><strong>Статус водителя:</strong>
+                                    {% if bus.driver.status == 'online' %}
+                                        <span class="text-success">На линии</span>
+                                    {% elif bus.driver.status == 'returning' %}
+                                        <span class="text-warning">Возвращаюсь в парк</span>
+                                    {% elif bus.driver.status == 'on_order' %}
+                                        <span class="text-info">Выполняю заказ</span>
+                                    {% else %}
+                                        <span class="text-muted">Не в сети</span>
+                                    {% endif %}
+                                </p>
                             {% endif %}
                             <a href="{% url 'bus_detail' bus.id %}" class="btn btn-primary">Подробнее</a>
                         </div>

@@ -4,43 +4,55 @@
     Отзывы о нашей компании
 {% endblock %}
 
+{% block links %}
+    <style>
+    .avatar-container {
+        float: left;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 15px;
+    }
+
+    .avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #fff;
+    }
+
+    .card-title {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-bottom: 5px;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <h1 class="mt-5 mb-4">Отзывы о нашей компании</h1>
     <div class="row">
+        {% for review in reviews %}
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Иван Петров</h5>
-                    <p class="card-text">Отличная компания! Водители всегда приходят вовремя, автобусы комфортные, обслуживание на высшем уровне.</p>
+                    <div class="avatar-container">
+                        <img src="{{ review.customer.profile_photo.url }}" alt="{{ review.customer }}" class="avatar">
+                    </div>
+                    <h5 class="card-title">{{ review.customer.user }}</h5>
+                    <p class="card-text">{{ review.comment }}</p>
+                    <p class="card-text">Автомобиль: {{ review.order.bus.brand }} {{ review.order.bus.model }}</p>
                 </div>
                 <div class="card-footer">
-                    <small class="text-muted">Опубликовано 3 дня назад</small>
+                    <small class="text-muted">Опубликовано {{ review.created_at|date:"F d, Y" }}</small>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Марина Сидорова</h5>
-                    <p class="card-text">Заказывала автобус на свадьбу. Все прошло отлично, гости остались довольны. Большое спасибо!</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Опубликовано 1 неделю назад</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Алексей Иванов</h5>
-                    <p class="card-text">Очень удобный сервис аренды автобусов. Пользовался несколько раз, всегда остался доволен.</p>
-                </div>
-                <div class="card-footer">
-                    <small class="text-muted">Опубликовано 2 недели назад</small>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

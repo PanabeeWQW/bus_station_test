@@ -2,18 +2,7 @@ from django.db import models
 from users.models import *
 
 class Bus_Category(models.Model):
-    BUS = 'Bus'
-    MICROBUS = 'Microbus'
-    MINIVAN = 'Minivan'
-
-    CATEGORY_CHOICES = [
-        (BUS, 'Автобусы'),
-        (MICROBUS, 'Микроавтобусы'),
-        (MINIVAN, 'Минивэны'),
-    ]
-
-    name = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
-
+    name = models.CharField(max_length=100)
 
     class Meta:
         verbose_name = 'Категория авто'
@@ -79,7 +68,7 @@ class Order(models.Model):
     end_point = models.CharField(max_length=200, null=True, blank=True)
     payment_method = models.CharField(max_length=50, choices=[('cash', 'Cash'), ('card', 'Card')])
     status = models.CharField(max_length=50,
-                              choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')],
+                              choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled'), ('completed', 'Completed'),],
                               default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     cancel_reason = models.TextField(null=True, blank=True)
@@ -102,13 +91,28 @@ class AdditionalPoints(models.Model):
     def __str__(self):
         return self.point
 
-class BusReview(models.Model):
-    bus = models.ForeignKey(Bus, on_delete=models.CASCADE)
+class TripReview(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     rating = models.IntegerField(default=5)
     comment = models.TextField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Отзыв о автобусе'
-        verbose_name_plural = 'Отзывы о автобусах'
+        verbose_name = 'Отзыв на поездку'
+        verbose_name_plural = 'Отзывы на поездки'
+
+
+
+class SupportRequest(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=100)
+    message = models.TextField()
+    processed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Вопрос технической поддержки'
+        verbose_name_plural = 'Вопросы технической поддержки'

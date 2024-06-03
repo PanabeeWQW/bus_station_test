@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
-        <style>
+    <style>
         .slick-slider {
             text-align: center;
         }
@@ -29,7 +29,9 @@
     <h1>{{ bus.brand }} {{ bus.model }}</h1>
     <div class="row">
         <div class="col-md-6">
-            <div><img style="object-fit: cover;" src="{{ bus.bus_photo.url }}" class="img-fluid rounded" alt="{{ bus.brand }} {{ bus.model }}"></div>
+            <div>
+                <img style="object-fit: cover;" src="{{ bus.bus_photo.url }}" class="img-fluid rounded" alt="{{ bus.brand }} {{ bus.model }}">
+            </div>
         </div>
         <div class="col-md-6">
             <ul class="list-group">
@@ -43,69 +45,69 @@
                     {% if bus.is_available %}
                         <span class="text-success">Доступен</span>
                     {% else %}
-                        <span class="text-danger"> Автобус забронирован до: {{ order.end_date }}</span>
+                        <span class="text-danger">Автобус забронирован до: {{ order.end_date }}</span>
                     {% endif %}
                 </li>
-                <li class="list-group-item"><strong>Водитель:</strong> {% if bus.driver %}{{ bus.driver.first_name }} {{ bus.driver.last_name }}{% else %}Нет назначенного водителя{% endif %}</li>
-            </ul>
-            {% if user.is_customer and bus.driver is None %}
-                <a href="{% url 'catalog' %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
-                {% elif user.is_employee and bus.driver is None %}
-                <form method="post" action="{% url 'attach_bus' bus.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary mt-3">Закрепить авто</button>
-                </form>
-                {% elif user.is_employee %}
-                {{ empty }}
-                {% else %}
-                <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
-                {% if bus.driver is None %}
-                    <a href="{% url 'carsharing' bus.id %}" class="btn btn-primary mt-3">Арендовать авто без водителя</a>
+                <li class="list-group-item"><strong>Водитель:</strong>
+                    {% if bus.driver %}
+                        {{ bus.driver.first_name }} {{ bus.driver.last_name }}
                     {% else %}
-                    {{ empty }}
+                        Нет назначенного водителя
+                    {% endif %}
+                </li>
+            </ul>
+            {% if user.is_authenticated %}
+                {% if user.is_customer %}
+                    {% if bus.driver is None %}
+                        <a href="{% url 'carsharing' bus.id %}" class="btn btn-primary mt-3">Оформить каршеринг</a>
+                        <a href="{% url 'support' %}" class="btn btn-success mt-3">Если нужен водитель на это авто, отправьте форму</a>
+                    {% else %}
+                        <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
+                    {% endif %}
+                {% elif user.is_employee %}
+                    {% if bus.driver is None %}
+                        <form method="post" action="{% url 'attach_bus' bus.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary mt-3">Закрепить авто</button>
+                        </form>
+                    {% else %}
+                        <!-- Здесь можно добавить сообщение или оставить пустым -->
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'order_with_driver' bus.id %}" class="btn btn-primary mt-3">Арендовать авто с водителем</a>
+                    {% if bus.driver is None %}
+                        <a href="{% url 'carsharing' bus.id %}" class="btn btn-primary mt-3">Оформить каршеринг</a>
+                    {% else %}
+                        <!-- Здесь можно добавить сообщение или оставить пустым -->
+                    {% endif %}
                 {% endif %}
             {% endif %}
+        {% if user.is_authenticated == False %}
+            <a href="{% url 'register' %}"><button class="btn btn-success" style="margin-top: 10px">Для возможности аренды нужно зайти в аккаунт</button></a>
+        {% endif %}
         </div>
     </div>
-<div style="margin-top: 100px" class="image-gallery text-center"> <!-- Добавлен класс text-center -->
-    <h4 style="text-align: center">Дополнительные фотографии</h4>
-    <div class="slick-slider">
-        {% for photo in bus.photos.all %}
-            <div class="col-6">
-                <a href="{{ photo.photo.url }}" data-fancybox="gallery" data-caption="Дополнительное фото {{ bus.model }}">
-                    <img src="{{ photo.photo.url }}" class="gallery-image img-fluid rounded" alt="Дополнительное фото {{ bus.model }}">
-                </a>
-            </div>
-        {% endfor %}
+    <div style="margin-top: 100px" class="image-gallery text-center">
+        <h4 style="text-align: center">Дополнительные фотографии</h4>
+        <div class="slick-slider">
+            {% for photo in bus.photos.all %}
+                <div class="col-6">
+                    <a href="{{ photo.photo.url }}" data-fancybox="gallery" data-caption="Дополнительное фото {{ bus.model }}">
+                        <img src="{{ photo.photo.url }}" class="gallery-image img-fluid rounded" alt="Дополнительное фото {{ bus.model }}">
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-</div>
 
     {% if bus.bus_photo_panoram %}
-    <div style="margin-top: 100px" class="panorama-container">
-        <h4 class="panorama-title" style="text-align: center">Интерьер салона</h4>
-        <a-scene embedded style="margin: 0 auto; width: 100%; height: 600px;">
-            <a-sky src="{{ bus.bus_photo_panoram.url }}"></a-sky>
-        </a-scene>
-    </div>
-    {% endif %}
-    <div style="margin-top: 100px" class="container review">
-        <h2>Отзывы о {{ bus.brand }} {{ bus.model }}</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="review-item">
-                    <h5>Отличное авто!</h5>
-                    <p>Очень комфортное и просторное. Идеально подходит для дальних поездок.</p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="review-item">
-                    <h5>Рекомендую!</h5>
-                    <p>Отличная машина по соотношению цена-качество. Все работает отлично, никаких нареканий.</p>
-                </div>
-            </div>
+        <div style="margin-top: 100px" class="panorama-container">
+            <h4 class="panorama-title" style="text-align: center">Интерьер салона</h4>
+            <a-scene embedded style="margin: 0 auto; width: 100%; height: 600px;">
+                <a-sky src="{{ bus.bus_photo_panoram.url }}"></a-sky>
+            </a-scene>
         </div>
-    </div>
-</div>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -116,16 +118,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
 <script>
 $(document).ready(function(){
-  $('.slick-slider').slick({
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    infinite: true,
-    dots: true,
-    arrows: true,
-    adaptiveHeight: true,
-    autoplay: true,           // Автопрокрутка
-    autoplaySpeed: 3000,      // Интервал в миллисекундах (3 секунды)
-  });
+    $('.slick-slider').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        infinite: true,
+        dots: true,
+        arrows: true,
+        adaptiveHeight: true,
+        autoplay: true,           // Автопрокрутка
+        autoplaySpeed: 3000,      // Интервал в миллисекундах (3 секунды)
+    });
 });
 </script>
 {% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'admin/base_site.html' %}
+
+{% block title %}Заявки для рассмотрения{% endblock %}
+
+{% block content %}
+    <h1>Заявки для рассмотрения</h1>
+    <ul>
+    {% for request in support_requests %}
+        <li>{{ request.name }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

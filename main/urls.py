@@ -7,6 +7,8 @@ urlpatterns = [
     path('', include('users.urls')),
     path('about/', about_us, name = 'about'),
     path('support/', support, name = 'support'),
+    path('admin/support-requests/', support_requests, name='support_requests'),
+    path('leave_review/<int:order_id>/', leave_review, name='leave_review'),
     path('reviews/', reviews, name = 'reviews'),
     path('service/', service, name = 'service'),
     path('contact/', contact_us, name = 'contact'),

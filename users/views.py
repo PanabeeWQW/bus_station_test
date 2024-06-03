@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView
 from .form import *
 from users.models import *
-from main.models import Order, AdditionalPoints, Bus
+from main.models import Order, Bus, TripReview
 
 
 def register(request):
@@ -38,15 +38,17 @@ def handle_customer_account(request, customer):
         form = ProfilePhotoForm(instance=customer)
 
     orders = Order.objects.filter(customer=customer)
-    addpoint = AdditionalPoints.objects.all()
+    reviews = TripReview.objects.filter(order__in=orders)
+    reviews_dict = {review.order.id: review for review in reviews}
 
     context = {
-        'addpoint': addpoint,
         'orders': orders,
         'customer': customer,
         'form': form,
+        'reviews_dict': reviews_dict,
     }
     return render(request, 'personal_data/personal_user_account.html', context)
+
 
 
 def handle_driver_account(request, driver):

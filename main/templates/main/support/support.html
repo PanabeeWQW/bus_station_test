@@ -7,6 +7,9 @@
 {% block content %}
 <div class="container">
     <h1 class="mt-5 mb-4">Форма технической поддержки</h1>
+    {% if success %}
+        <h1 class="text-success">Форма была отправлена успешно!</h1>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         <div class="mb-3">

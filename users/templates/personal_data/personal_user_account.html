@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-    {{ user }}
+    {{ customer.user.username }} - Личный кабинет
 {% endblock %}
 
 {% block content %}
@@ -67,31 +67,51 @@
                                 <li class="list-group-item"><strong>Последняя точка маршрута:</strong> {{ order.end_point }}</li>
                                 <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
                                 <li class="list-group-item"><strong>Статус:</strong>
-                                {% if order.status == 'confirmed' %}
-                                    Водитель принял заказ! Он уже в пути!
-                                    <li class="list-group-item"><strong>Контакты водителя:</strong> {{ order.bus.driver.phone_number }}</li>
-                                {% elif order.status == 'cancelled' %}
-                                    <span class="text-danger">
-                                        {% if order.cancelled_by == 'customer' %}
-                                            Пользователь отменил заказ
-                                        {% elif order.cancelled_by == 'driver' %}
-                                            Водитель отменил заказ
+                                    {% if order.status == 'completed' %}
+                                        Завершен
+                                    {% else %}
+                                        {% if order.status == 'confirmed' %}
+                                            Водитель принял заказ! Он уже в пути!
+                                            <li class="list-group-item"><strong>Контакты водителя:</strong> {{ order.bus.driver.phone_number }}</li>
+                                        {% elif order.status == 'cancelled' %}
+                                            <span class="text-danger">
+                                                {% if order.cancelled_by == 'customer' %}
+                                                    Пользователь отменил заказ
+                                                {% elif order.cancelled_by == 'driver' %}
+                                                    Водитель отменил заказ
+                                                {% endif %}
+                                            </span>
+                                            <li class="list-group-item"><strong>Сообщение:</strong>{{ order.cancel_reason }}</li>
+                                        {% else %}
+                                            В ожидании подтверждения
                                         {% endif %}
-                                    </span>
-                                    <li class="list-group-item"><strong>Сообщение:</strong>{{ order.cancel_reason }}</li>
-                                {% endif %}
+                                    {% endif %}
                                 </li>
                                 <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
+                                <li class="list-group-item"><strong>Статус водителя:</strong>
+                                    {% if order.bus.driver.status == 'online' %}
+                                        <span class="text-success">На линии</span>
+                                    {% elif order.bus.driver.status == 'returning' %}
+                                        <span class="text-warning">Возвращаюсь в парк</span>
+                                    {% elif order.bus.driver.status == 'on_order' %}
+                                        <span class="text-info">Выполняю заказ</span>
+                                    {% else %}
+                                        <span class="text-muted">Не в сети</span>
+                                    {% endif %}
+                                </li>
                             </ul>
-                            {% if order.status != 'cancelled' %}
+                            {% if order.status != 'cancelled' and order.status != 'confirmed' and order.status != 'completed' %}
                                 <form method="post" action="{% url 'cancel_order' order.id %}">
                                     {% csrf_token %}
                                     <div class="form-group mt-3">
                                         <label for="cancel_reason">Причина отмены:</label>
                                         <textarea id="cancel_reason" name="cancel_reason" class="form-control" required></textarea>
-                                        <button type="submit" class="btn btn-danger mt-2">Подать заявку</button>
+                                        <button type="submit" class="btn btn-danger mt-2">Отменить заказ</button>
                                     </div>
                                 </form>
+                            {% endif %}
+                            {% if order.status == 'completed' and order.id not in reviews_dict %}
+                                <a href="{% url 'leave_review' order.id %}" class="btn btn-primary mt-3">Оставить отзыв</a>
                             {% endif %}
                         </div>
                     </div>

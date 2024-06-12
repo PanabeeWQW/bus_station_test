@@ -7,6 +7,11 @@
 {% block content %}
 <div class="container">
     <h1 class="mt-5 mb-4">Личный кабинет водителя</h1>
+    {% if not driver.is_approved %}
+    <div class="alert alert-warning">
+        Ваш аккаунт пока что не подтвержден администратором. Вы не можете изменить статус на "На линии".
+    </div>
+    {% endif %}
     <div class="row">
         <div class="col-md-4">
             <div class="card">
@@ -92,72 +97,80 @@
                 </div>
             </div>
             <!-- /Форма изменения статуса -->
-<!-- Отображение заказов -->
-{% if driver.status == 'online' %}
-    {% if orders %}
-        {% for order in orders %}
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h3 class="card-title">Информация о заказе №{{ order.id }}</h3>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><strong>Дата начала аренды:</strong> {{ order.start_date }}</li>
-                        <li class="list-group-item"><strong>Дата окончания аренды:</strong> {{ order.end_date }}</li>
-                        <li class="list-group-item"><strong>Начальная точка маршрута:</strong> {{ order.start_point }}</li>
-                        <li class="list-group-item">
-                            <strong>Дополнительные точки маршрута:</strong>
-                            <ul>
-                                {% for point in order.additional_points.all %}
-                                    <li>{{ point }}</li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                        <li class="list-group-item"><strong>Последняя точка маршрута:</strong> {{ order.end_point }}</li>
-                        <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
-                        <li class="list-group-item"><strong>Статус:</strong>
-                            {% if order.status == 'confirmed' %}
-                                Принят! Удачной поездки!
-                            {% elif order.status == 'cancelled' %}
-                                Отменен.
-                            {% elif order.status == 'completed' %}
-                                Завершен.
-                            {% else %}
-                                В ожидании подтверждения
-                            {% endif %}
-                        </li>
-                        <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
-                        <li class="list-group-item"><strong>Водитель:</strong> {{ order.bus.driver.user.get_full_name }}</li>
-                    </ul>
 
-                    <!-- Форма принятия или отклонения заказа -->
-                    {% if order.status != 'confirmed' and order.status != 'cancelled' and order.status != 'completed'%}
-                        <form method="post" action="{% url 'handle_order' order.id %}">
-                            {% csrf_token %}
-                            <div class="form-group mt-3">
-                                <label for="cancel_reason">Сообщение: </label>
-                                <textarea style="margin-bottom: 10px" id="cancel_reason" name="cancel_reason" class="form-control" required></textarea>
-                                <button type="submit" class="btn btn-success" name="action" value="accept">Принять заказ</button>
-                                <button type="submit" class="btn btn-danger" name="action" value="reject">Отклонить заказ</button>
-                            </div>
-                        </form>
-                    {% endif %}
-                    <!-- /Форма принятия или отклонения заказа -->
+            <!-- Отображение заказов -->
+            {% if driver.is_approved and driver.status == 'online' %}
+                {% if orders %}
+                    {% for order in orders %}
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <h3 class="card-title">Информация о заказе №{{ order.id }}</h3>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><strong>Дата начала аренды:</strong> {{ order.start_date }}</li>
+                                    <li class="list-group-item"><strong>Дата окончания аренды:</strong> {{ order.end_date }}</li>
+                                    <li class="list-group-item"><strong>Начальная точка маршрута:</strong> {{ order.start_point }}</li>
+                                    <li class="list-group-item">
+                                        <strong>Дополнительные точки маршрута:</strong>
+                                        <ul>
+                                            {% for point in order.additional_points.all %}
+                                                <li>{{ point }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </li>
+                                    <li class="list-group-item"><strong>Последняя точка маршрута:</strong> {{ order.end_point }}</li>
+                                    <li class="list-group-item"><strong>Метод оплаты:</strong> {{ order.get_payment_method_display }}</li>
+                                    <li class="list-group-item"><strong>Статус:</strong>
+                                        {% if order.status == 'confirmed' %}
+                                            Принят! Удачной поездки!
+                                        {% elif order.status == 'cancelled' %}
+                                            Отменен.
+                                        {% elif order.status == 'completed' %}
+                                            Завершен.
+                                        {% else %}
+                                            В ожидании подтверждения
+                                        {% endif %}
+                                    </li>
+                                    <li class="list-group-item"><strong>Выбранный автобус:</strong> {{ order.bus.brand.name }} {{ order.bus.model }}</li>
+                                    <li class="list-group-item"><strong>Водитель:</strong> {{ order.bus.driver.user.get_full_name }}</li>
+                                </ul>
 
-                    {% if order.status == 'confirmed' %}
-                        <form method="post" action="{% url 'handle_order' order.id %}">
-                            {% csrf_token %}
-                            <div class="form-group mt-3">
-                                <button type="submit" class="btn btn-success" name="action" value="complete">Завершить заказ</button>
+                                <!-- Форма принятия или отклонения заказа -->
+                                {% if order.status != 'confirmed' and order.status != 'cancelled' and order.status != 'completed'%}
+                                    <form method="post" action="{% url 'handle_order' order.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-group mt-3">
+                                            <label for="cancel_reason">Сообщение: </label>
+                                            <textarea style="margin-bottom: 10px" id="cancel_reason" name="cancel_reason" class="form-control" required></textarea>
+                                            <button type="submit" class="btn btn-success" name="action" value="accept">Принять заказ</button>
+                                            <button type="submit" class="btn btn-danger" name="action" value="reject">Отклонить заказ</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                                <!-- /Форма принятия или отклонения заказа -->
+
+                                {% if order.status == 'confirmed' %}
+                                    <form method="post" action="{% url 'handle_order' order.id %}">
+                                        {% csrf_token %}
+                                        <div class="form-group mt-3">
+                                            <button type="submit" class="btn btn-success" name="action" value="complete">Завершить заказ</button>
+                                        </div>
+                                    </form>
+                                {% endif %}
                             </div>
-                        </form>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="alert alert-info mt-4" role="alert">
-            Нет доступных заказов
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Нет доступных заказов для отображения</p>
+                {% endif %}
+            {% else %}
+                {% if driver.is_approved %}
+                    <div class="alert alert-warning mt-4">
+                        Для просмотра доступных заказов перейдите в статус "На линии".
+                    </div>
+                {% endif %}
+            {% endif %}
+            <!-- /Отображение заказов -->
         </div>
-    {% endif %}
-{% endif %}
-<!-- /Отображение заказов -->
+    </div>
+</div>
 {% endblock %}

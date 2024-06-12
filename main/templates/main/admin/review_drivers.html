@@ -1,0 +1,74 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Проверка анкет водителей
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Анкеты водителей на проверку</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Имя пользователя</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Номер водительского удостоверения</th>
+                    <th scope="col">Опыт вождения (лет)</th>
+                    <th scope="col">Дата рождения</th>
+                    <th scope="col">Фото профиля</th>
+                    <th scope="col">Резюме</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for driver in drivers %}
+                <tr class="{% if driver.approval_status == 'approved' %}table-success{% elif driver.approval_status == 'rejected' %}table-danger{% else %}table-warning{% endif %}">
+                    <td>{{ driver.user.username }}</td>
+                    <td>{{ driver.first_name }}</td>
+                    <td>{{ driver.last_name }}</td>
+                    <td>{{ driver.user.email }}</td>
+                    <td>{{ driver.driver_license }}</td>
+                    <td>{{ driver.experience_years }}</td>
+                    <td>{{ driver.date_of_birth }}</td>
+                    <td>
+                        {% if driver.profile_photo %}
+                        <img src="{{ driver.profile_photo.url }}" alt="Фото профиля" class="img-thumbnail" width="100">
+                        {% else %}
+                        <span class="text-muted">Нет фото</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if driver.resume %}
+                        <a href="{{ driver.resume.url }}" target="_blank" class="btn btn-link">Просмотреть резюме</a>
+                        {% else %}
+                        <span class="text-muted">Нет резюме</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if driver.approval_status == 'approved' %}
+                            <span class="badge bg-success">Одобрено</span>
+                        {% elif driver.approval_status == 'rejected' %}
+                            <span class="badge bg-danger">Отклонено</span>
+                        {% else %}
+                            <span class="badge bg-warning">На рассмотрении</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if driver.approval_status == 'pending' %}
+                            <a href="{% url 'approve_driver' driver.id %}" class="btn btn-success btn-sm">Одобрить</a>
+                            <a href="{% url 'reject_driver' driver.id %}" class="btn btn-danger btn-sm">Отклонить</a>
+                        {% else %}
+                            <span class="text-muted">Нет действий</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

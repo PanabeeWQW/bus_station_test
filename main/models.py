@@ -79,6 +79,15 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
 
+    def check_overlapping_orders(self):
+        overlapping_orders = Order.objects.filter(
+            bus=self.bus,
+            start_date__lt=self.end_date,
+            end_date__gt=self.start_date,
+            is_active=True,
+            status='confirmed'
+        ).exclude(id=self.id)
+        return overlapping_orders.exists()
 
 class AdditionalPoints(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='additional_points')

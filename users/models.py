@@ -11,6 +11,7 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+
 class Driver(models.Model):
     STATUS_CHOICES = (
         ('online', 'На линии'),
@@ -18,15 +19,26 @@ class Driver(models.Model):
         ('on_order', 'Выполняю заказ'),
         ('offline', 'Не в сети'),
     )
+
+    APPROVAL_STATUS_CHOICES = (
+        ('approved', 'Одобрено'),
+        ('rejected', 'Отклонено'),
+        ('pending', 'На рассмотрении'),
+    )
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
+    approval_status = models.CharField(max_length=10, choices=APPROVAL_STATUS_CHOICES, default='pending')
+    rejection_reason = models.TextField(null=True, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     driver_license = models.CharField(max_length=50)
     experience_years = models.IntegerField(validators=[MinValueValidator(0)])
     profile_photo = models.ImageField(upload_to='images/driver_profile_photos', null=True, blank=True)
+    resume = models.FileField(upload_to='resumes/', null=True, blank=True)
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50, null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
+    is_approved = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Водитель'

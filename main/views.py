@@ -1,6 +1,7 @@
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, Http404
+from django.utils.dateparse import parse_datetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -15,7 +16,6 @@ def about_us(request):
 
 def contact_us(request):
     return render(request, 'main/contacts/contacts.html')
-
 
 def support(request):
     success = False  # Переменная, которая будет указывать на успешную отправку формы
@@ -34,7 +34,7 @@ def support_requests(request):
     return render(request, 'main/admin/support_requests.html', {'support_requests': support_requests})
 
 @staff_member_required
-def support_requests(request):
+def admin_support_requests(request):
     support_requests = SupportRequest.objects.all()
     return render(request, 'main/admin/admin_forms.html', {'support_requests': support_requests})
 
@@ -56,7 +56,6 @@ def leave_review(request, order_id):
         form = TripReviewForm()
 
     return render(request, 'main/reviews/leave_reviews.html', {'form': form, 'order': order})
-
 
 def service(request):
     return render(request, 'main/about/service.html')
@@ -85,7 +84,6 @@ def bus_detail(request, bus_id):
     order = Order.objects.filter(bus=bus).last()
     context = {'bus': bus, 'order': order}
     return render(request, 'main/bus_detail/bus_detail.html', context)
-
 
 def order_with_driver(request, bus_id):
     errors = []
@@ -124,29 +122,23 @@ def order_with_driver(request, bus_id):
 
         bus = get_object_or_404(Bus, id=bus_id)
 
-        overlapping_orders = Order.objects.filter(
+        order = Order(
+            customer=request.user.customer,
             bus=bus,
-            start_date__lte=end_date,
-            end_date__gte=start_date,
-            is_active=True,
-            status='confirmed'
+            driver_needed=True,
+            start_date=start_date,
+            end_date=end_date,
+            start_point=start_point,
+            end_point=end_point,
+            payment_method=payment_method,
+            status='pending'
         )
 
-        if overlapping_orders.exists():
+        if order.check_overlapping_orders():
             errors.append("Автобус уже забронирован на выбранные даты.")
 
         if not errors:
-            order = Order.objects.create(
-                customer=request.user.customer,
-                bus=bus,
-                driver_needed=True,
-                start_date=start_date,
-                end_date=end_date,
-                start_point=start_point,
-                end_point=end_point,
-                payment_method=payment_method,
-                status='pending'
-            )
+            order.save()
 
             additional_points = request.POST.getlist('additional-point')
             for point in additional_points:
@@ -205,7 +197,6 @@ def handle_order(request, order_id):
         'form': form,
     }
     return render(request, 'main/index.html', context)
-
 
 def carsharing(request, bus_id):
     return render(request, 'main/order/carsharing.html')

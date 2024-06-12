@@ -11,7 +11,7 @@ def validate_age(value):
     if age < 18 or age > 100:
         raise ValidationError('Вы должны быть старше 18 лет и младше 100 лет.')
 
-class CustomerSignUpForm(UserCreationForm):
+class BaseSignUpForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
@@ -22,12 +22,13 @@ class CustomerSignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name', 'last_name', 'phone_number', 'profile_photo', 'date_of_birth', 'password1', 'password2')
 
+class CustomerSignUpForm(BaseSignUpForm):
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
         user.is_customer = True
         user.save()
-        customer = Customer.objects.create(
+        Customer.objects.create(
             user=user,
             phone_number=self.cleaned_data.get('phone_number'),
             profile_photo=self.cleaned_data.get('profile_photo'),
@@ -35,27 +36,20 @@ class CustomerSignUpForm(UserCreationForm):
         )
         return user
 
-
-class DriverSignUpForm(UserCreationForm):
-    first_name = forms.CharField(required=True)
-    last_name = forms.CharField(required=True)
+class DriverSignUpForm(BaseSignUpForm):
     resume = forms.FileField(required=True)
-    phone_number = forms.CharField(required=True)
     driver_license = forms.CharField(max_length=50, required=True)
     experience_years = forms.IntegerField(min_value=0, required=True)
-    profile_photo = forms.ImageField(required=False)
-    date_of_birth = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}), validators=[validate_age])
 
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number', 'password1', 'password2', 'driver_license', 'experience_years', 'profile_photo', 'date_of_birth', 'resume')
+    class Meta(BaseSignUpForm.Meta):
+        fields = BaseSignUpForm.Meta.fields + ('email', 'driver_license', 'experience_years', 'resume')
 
     @transaction.atomic
     def save(self):
         user = super().save(commit=False)
         user.is_employee = True
         user.save()
-        driver = Driver.objects.create(
+        Driver.objects.create(
             user=user,
             first_name=self.cleaned_data.get('first_name'),
             last_name=self.cleaned_data.get('last_name'),
@@ -65,6 +59,25 @@ class DriverSignUpForm(UserCreationForm):
             experience_years=self.cleaned_data.get('experience_years'),
             profile_photo=self.cleaned_data.get('profile_photo'),
             date_of_birth=self.cleaned_data.get('date_of_birth'),
-            is_approved = False
+            is_approved=False
         )
         return user
+
+class ProfilePhotoForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['profile_photo']
+
+class UpdateDriverStatusForm(forms.ModelForm):
+    class Meta:
+        model = Driver
+        fields = ['status']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateDriverStatusForm, self).__init__(*args, **kwargs)
+        driver = kwargs['instance']
+        if not driver.is_approved:
+            self.fields['status'].choices = [
+                (choice_value, choice_label) for choice_value, choice_label in self.fields['status'].choices
+                if choice_value != 'online'
+            ]

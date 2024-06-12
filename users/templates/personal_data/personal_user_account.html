@@ -32,10 +32,19 @@
                     <h3 class="card-title">Информация о пользователе</h3>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Имя пользователя:</strong> {{ customer.user.username }}</li>
+                        <li class="list-group-item"><strong>ФИО:</strong> {{ customer.user.first_name }} {{ customer.user.last_name }}</li>
                         <li class="list-group-item"><strong>Электронная почта:</strong> {{ customer.user.email }}</li>
+                        <li class="list-group-item"><strong>Роль пользователя:</strong>
+                            {% if customer.user.is_customer %}
+                                Арендатор
+                            {% elif customer.user.is_employee %}
+                                Сотрудник
+                            {% endif %}
+                        </li>
                         <li class="list-group-item"><strong>Номер телефона:</strong> {{ customer.phone_number }}</li>
                         <li class="list-group-item"><strong>Дата рождения:</strong> {{ customer.date_of_birth }}</li>
                         <li class="list-group-item"><strong>Баланс:</strong> {{ customer.balance }}</li>
+                        <li class="list-group-item"><strong>Дата регистрации:</strong> {{ customer.user.date_joined|date:"d.m.Y" }}</li>
                     </ul>
                 </div>
             </div>
